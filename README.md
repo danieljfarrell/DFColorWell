@@ -22,3 +22,13 @@ Usage
     - (NSUInteger) numberOfColumnsInColorWell:(DFColorWell*)colorWell;
     - (NSColor*) colorWell:(DFColorWell*)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
 ```
+
+Contact
+-------
+* Daniel Farrell
+* [@danieljfarrell](http://twitter.com/danieljfarrell)
+* http://daniel.farrell.name
+
+Licensing
+---------
+DFColorWell is licensed under the [BSD license](http://www.opensource.org/licenses/bsd-license.php).
