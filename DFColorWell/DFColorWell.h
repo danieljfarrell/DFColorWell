@@ -1,6 +1,6 @@
 //
-//  DFColorSelectorView.h
-//  DFColorSelector
+//  DFColorWell.h
+//  DFColorWell
 //
 //  Created by Daniel Farrell on 18/01/2015.
 //  Copyright (c) 2015 Daniel Farrell. All rights reserved.
@@ -13,9 +13,9 @@
 @protocol DFColorWellDelegate <NSObject>
 
 @required
-- (NSUInteger) numberOfRowsInColorWell:(DFColorWell*)colorSelectorView;
-- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell*)colorSelectorView;
-- (NSColor*) colorWell:(DFColorWell*)colorSelectorView colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
+- (NSUInteger) numberOfRowsInColorWell:(DFColorWell*)colorWell;
+- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell*)colorWell;
+- (NSColor*) colorWell:(DFColorWell*)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
 
 @end
 

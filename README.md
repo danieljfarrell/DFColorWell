@@ -18,7 +18,7 @@ Usage
 4. Implement all the **required** delegate methods which fills the pop over with different colours:
 
 ```
-    - (NSUInteger) numberOfRowsInColorWell:(DFColorWell*)colorSelectorView;
-    - (NSUInteger) numberOfColumnsInColorWell:(DFColorWell*)colorSelectorView;
-    - (NSColor*) colorWell:(DFColorWell*)colorSelectorView colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
+    - (NSUInteger) numberOfRowsInColorWell:(DFColorWell*)colorWell;
+    - (NSUInteger) numberOfColumnsInColorWell:(DFColorWell*)colorWell;
+    - (NSColor*) colorWell:(DFColorWell*)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
 ```

@@ -1,6 +1,6 @@
 //
 //  DFColorGridViewController.m
-//  DFColorSelector
+//  DFColorWell
 //
 //  Created by Daniel Farrell on 18/01/2015.
 //  Copyright (c) 2015 Daniel Farrell. All rights reserved.
@@ -33,15 +33,15 @@
 }
 
 - (NSUInteger) numberOfRows {
-    return [_colorSelectorView.delegate numberOfRowsInColorWell:_colorSelectorView];
+    return [_colorWell.delegate numberOfRowsInColorWell:_colorWell];
 }
 
 - (NSUInteger) numberOfColumns {
-    return [_colorSelectorView.delegate numberOfColumnsInColorWell:_colorSelectorView];
+    return [_colorWell.delegate numberOfColumnsInColorWell:_colorWell];
 }
 
 - (NSColor*) colorAtColumn:(NSUInteger)columnIndex row:(NSUInteger)rowIndex {
-    return [_colorSelectorView.delegate colorWell:_colorSelectorView colorAtColumn:columnIndex row:rowIndex];
+    return [_colorWell.delegate colorWell:_colorWell colorAtColumn:columnIndex row:rowIndex];
 }
 
 

@@ -1,6 +1,6 @@
 //
 //  DFColorGridView.m
-//  DFColorSelector
+//  DFColorWell
 //
 //  Created by Daniel Farrell on 18/01/2015.
 //  Copyright (c) 2015 Daniel Farrell. All rights reserved.
@@ -209,7 +209,7 @@
         selectedColor = [_controller colorAtColumn:_mouseDownInColumnIndex row:_mouseDownInRowIndex];
         if (selectedColor) {
             if (selectedColor != (id)[NSNull null]) {
-                _controller.colorSelectorView.color = selectedColor;
+                _controller.colorWell.color = selectedColor;
             }
         }
     }

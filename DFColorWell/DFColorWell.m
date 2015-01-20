@@ -1,6 +1,6 @@
 //
-//  DFColorSelectorView.m
-//  DFColorSelector
+//  DFColorWell.m
+//  DFColorWell.h
 //
 //  Created by Daniel Farrell on 18/01/2015.
 //  Copyright (c) 2015 Daniel Farrell. All rights reserved.
@@ -332,7 +332,7 @@
 
     if (_colorGridViewController == nil) {
         _colorGridViewController = [[DFColorGridViewController alloc] initWithNibName:@"DFColorGridViewController" bundle:nil];
-        _colorGridViewController.colorSelectorView = self;
+        _colorGridViewController.colorWell = self;
         DFColorGridView *view = (DFColorGridView*)_colorGridViewController.view;
         view.controller = _colorGridViewController;
     }

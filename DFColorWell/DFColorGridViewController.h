@@ -1,6 +1,6 @@
 //
 //  DFColorGridViewController.h
-//  DFColorSelector
+//  DFColorWell
 //
 //  Created by Daniel Farrell on 18/01/2015.
 //  Copyright (c) 2015 Daniel Farrell. All rights reserved.
@@ -12,7 +12,7 @@
 
 @interface DFColorGridViewController : NSViewController <NSCollectionViewDelegate>
 
-@property DFColorWell *colorSelectorView;
+@property DFColorWell *colorWell;
 
 @property NSMutableArray *colorModelArray;
 

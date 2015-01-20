@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  DFColorSelector
+//  DFColorWell
 //
 //  Created by Daniel Farrell on 18/01/2015.
 //  Copyright (c) 2015 Daniel Farrell. All rights reserved.
@@ -70,17 +70,17 @@
     // Insert code here to tear down your application
 }
 
-#pragma mark - Delegate methods for the color selector
+#pragma mark - Delegate methods for the color well
 
-- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell *)colorSelectorView {
+- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell *)colorWell {
     return 6;
 }
 
-- (NSUInteger) numberOfRowsInColorWell:(DFColorWell *)colorSelectorView {
+- (NSUInteger) numberOfRowsInColorWell:(DFColorWell *)colorWell {
     return 5;
 }
 
-- (NSColor*) colorWell:(DFColorWell *)colorSelectorView colorAtColumn:(NSUInteger)column row:(NSUInteger)row {
+- (NSColor*) colorWell:(DFColorWell *)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row {
     
     NSString *key = [NSString stringWithFormat:@"(%lu,%lu)", (unsigned long)column,(unsigned long)row];
     NSColor *color = _colors[key];
