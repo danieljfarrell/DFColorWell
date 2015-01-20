@@ -1,0 +1,322 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		65103E361A6BD1DF00B29F79 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E351A6BD1DF00B29F79 /* AppDelegate.m */; };
+		65103E381A6BD1DF00B29F79 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E371A6BD1DF00B29F79 /* main.m */; };
+		65103E3A1A6BD1DF00B29F79 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65103E391A6BD1DF00B29F79 /* Images.xcassets */; };
+		65103E3D1A6BD1DF00B29F79 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65103E3B1A6BD1DF00B29F79 /* MainMenu.xib */; };
+		65103E541A6BD23600B29F79 /* DFColorWell.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E531A6BD23600B29F79 /* DFColorWell.m */; };
+		65103E581A6BE65D00B29F79 /* DFColorGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E561A6BE65D00B29F79 /* DFColorGridViewController.m */; };
+		65103E591A6BE65D00B29F79 /* DFColorGridViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65103E571A6BE65D00B29F79 /* DFColorGridViewController.xib */; };
+		65103E621A6BEC0D00B29F79 /* DFColorGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E611A6BEC0D00B29F79 /* DFColorGridView.m */; };
+		65103E651A6C049A00B29F79 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65103E631A6C049A00B29F79 /* Quartz.framework */; };
+		65103E661A6C049A00B29F79 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65103E641A6C049A00B29F79 /* QuartzCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		65103E2F1A6BD1DF00B29F79 /* DFColorWell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DFColorWell.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		65103E331A6BD1DF00B29F79 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		65103E341A6BD1DF00B29F79 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		65103E351A6BD1DF00B29F79 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		65103E371A6BD1DF00B29F79 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		65103E391A6BD1DF00B29F79 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		65103E3C1A6BD1DF00B29F79 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		65103E521A6BD23600B29F79 /* DFColorWell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFColorWell.h; sourceTree = "<group>"; };
+		65103E531A6BD23600B29F79 /* DFColorWell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFColorWell.m; sourceTree = "<group>"; };
+		65103E551A6BE65D00B29F79 /* DFColorGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFColorGridViewController.h; sourceTree = "<group>"; };
+		65103E561A6BE65D00B29F79 /* DFColorGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFColorGridViewController.m; sourceTree = "<group>"; };
+		65103E571A6BE65D00B29F79 /* DFColorGridViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DFColorGridViewController.xib; sourceTree = "<group>"; };
+		65103E601A6BEC0D00B29F79 /* DFColorGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFColorGridView.h; sourceTree = "<group>"; };
+		65103E611A6BEC0D00B29F79 /* DFColorGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFColorGridView.m; sourceTree = "<group>"; };
+		65103E631A6C049A00B29F79 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		65103E641A6C049A00B29F79 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		65103E2C1A6BD1DF00B29F79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65103E651A6C049A00B29F79 /* Quartz.framework in Frameworks */,
+				65103E661A6C049A00B29F79 /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		65103E261A6BD1DF00B29F79 = {
+			isa = PBXGroup;
+			children = (
+				65103E311A6BD1DF00B29F79 /* DFColorWell */,
+				65103E301A6BD1DF00B29F79 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		65103E301A6BD1DF00B29F79 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				65103E2F1A6BD1DF00B29F79 /* DFColorWell.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		65103E311A6BD1DF00B29F79 /* DFColorWell */ = {
+			isa = PBXGroup;
+			children = (
+				65103E341A6BD1DF00B29F79 /* AppDelegate.h */,
+				65103E351A6BD1DF00B29F79 /* AppDelegate.m */,
+				65103E521A6BD23600B29F79 /* DFColorWell.h */,
+				65103E531A6BD23600B29F79 /* DFColorWell.m */,
+				65103E6A1A6C6C9C00B29F79 /* Support Classes */,
+				65103E391A6BD1DF00B29F79 /* Images.xcassets */,
+				65103E3B1A6BD1DF00B29F79 /* MainMenu.xib */,
+				65103E321A6BD1DF00B29F79 /* Supporting Files */,
+			);
+			path = DFColorWell;
+			sourceTree = "<group>";
+		};
+		65103E321A6BD1DF00B29F79 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				65103E631A6C049A00B29F79 /* Quartz.framework */,
+				65103E641A6C049A00B29F79 /* QuartzCore.framework */,
+				65103E331A6BD1DF00B29F79 /* Info.plist */,
+				65103E371A6BD1DF00B29F79 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		65103E6A1A6C6C9C00B29F79 /* Support Classes */ = {
+			isa = PBXGroup;
+			children = (
+				65103E551A6BE65D00B29F79 /* DFColorGridViewController.h */,
+				65103E561A6BE65D00B29F79 /* DFColorGridViewController.m */,
+				65103E571A6BE65D00B29F79 /* DFColorGridViewController.xib */,
+				65103E601A6BEC0D00B29F79 /* DFColorGridView.h */,
+				65103E611A6BEC0D00B29F79 /* DFColorGridView.m */,
+			);
+			name = "Support Classes";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		65103E2E1A6BD1DF00B29F79 /* DFColorWell */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65103E4C1A6BD1DF00B29F79 /* Build configuration list for PBXNativeTarget "DFColorWell" */;
+			buildPhases = (
+				65103E2B1A6BD1DF00B29F79 /* Sources */,
+				65103E2C1A6BD1DF00B29F79 /* Frameworks */,
+				65103E2D1A6BD1DF00B29F79 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DFColorWell;
+			productName = DFColorSelector;
+			productReference = 65103E2F1A6BD1DF00B29F79 /* DFColorWell.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		65103E271A6BD1DF00B29F79 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Daniel Farrell";
+				TargetAttributes = {
+					65103E2E1A6BD1DF00B29F79 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 65103E2A1A6BD1DF00B29F79 /* Build configuration list for PBXProject "DFColorWell" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 65103E261A6BD1DF00B29F79;
+			productRefGroup = 65103E301A6BD1DF00B29F79 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				65103E2E1A6BD1DF00B29F79 /* DFColorWell */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		65103E2D1A6BD1DF00B29F79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65103E591A6BE65D00B29F79 /* DFColorGridViewController.xib in Resources */,
+				65103E3A1A6BD1DF00B29F79 /* Images.xcassets in Resources */,
+				65103E3D1A6BD1DF00B29F79 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		65103E2B1A6BD1DF00B29F79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65103E581A6BE65D00B29F79 /* DFColorGridViewController.m in Sources */,
+				65103E381A6BD1DF00B29F79 /* main.m in Sources */,
+				65103E541A6BD23600B29F79 /* DFColorWell.m in Sources */,
+				65103E621A6BEC0D00B29F79 /* DFColorGridView.m in Sources */,
+				65103E361A6BD1DF00B29F79 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		65103E3B1A6BD1DF00B29F79 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				65103E3C1A6BD1DF00B29F79 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		65103E4A1A6BD1DF00B29F79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		65103E4B1A6BD1DF00B29F79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		65103E4D1A6BD1DF00B29F79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = DFColorWell/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = DFColorWell;
+			};
+			name = Debug;
+		};
+		65103E4E1A6BD1DF00B29F79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = DFColorWell/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = DFColorWell;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		65103E2A1A6BD1DF00B29F79 /* Build configuration list for PBXProject "DFColorWell" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65103E4A1A6BD1DF00B29F79 /* Debug */,
+				65103E4B1A6BD1DF00B29F79 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65103E4C1A6BD1DF00B29F79 /* Build configuration list for PBXNativeTarget "DFColorWell" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65103E4D1A6BD1DF00B29F79 /* Debug */,
+				65103E4E1A6BD1DF00B29F79 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 65103E271A6BD1DF00B29F79 /* Project object */;
+}
