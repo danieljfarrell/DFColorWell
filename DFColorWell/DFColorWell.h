@@ -13,9 +13,9 @@
 @protocol DFColorWellDelegate <NSObject>
 
 @required
-- (NSUInteger) numberOfRowsInColorSelectorView:(DFColorWell*)colorSelectorView;
-- (NSUInteger) numberOfColumnsInColorSelectorView:(DFColorWell*)colorSelectorView;
-- (NSColor*) colorSelectorView:(DFColorWell*)colorSelectorView colorAtRow:(NSUInteger)row column:(NSUInteger)column;
+- (NSUInteger) numberOfRowsInColorWell:(DFColorWell*)colorSelectorView;
+- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell*)colorSelectorView;
+- (NSColor*) colorWell:(DFColorWell*)colorSelectorView colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
 
 @end
 

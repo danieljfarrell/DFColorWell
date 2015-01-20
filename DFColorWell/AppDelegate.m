@@ -72,15 +72,15 @@
 
 #pragma mark - Delegate methods for the color selector
 
-- (NSUInteger) numberOfColumnsInColorSelectorView:(DFColorWell *)colorSelectorView {
+- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell *)colorSelectorView {
     return 6;
 }
 
-- (NSUInteger) numberOfRowsInColorSelectorView:(DFColorWell *)colorSelectorView {
+- (NSUInteger) numberOfRowsInColorWell:(DFColorWell *)colorSelectorView {
     return 5;
 }
 
-- (NSColor*) colorSelectorView:(DFColorWell *)colorSelectorView colorAtRow:(NSUInteger)row column:(NSUInteger)column {
+- (NSColor*) colorWell:(DFColorWell *)colorSelectorView colorAtColumn:(NSUInteger)column row:(NSUInteger)row {
     
     NSString *key = [NSString stringWithFormat:@"(%lu,%lu)", (unsigned long)column,(unsigned long)row];
     NSColor *color = _colors[key];

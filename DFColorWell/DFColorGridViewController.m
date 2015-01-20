@@ -33,15 +33,15 @@
 }
 
 - (NSUInteger) numberOfRows {
-    return [_colorSelectorView.delegate numberOfRowsInColorSelectorView:_colorSelectorView];
+    return [_colorSelectorView.delegate numberOfRowsInColorWell:_colorSelectorView];
 }
 
 - (NSUInteger) numberOfColumns {
-    return [_colorSelectorView.delegate numberOfColumnsInColorSelectorView:_colorSelectorView];
+    return [_colorSelectorView.delegate numberOfColumnsInColorWell:_colorSelectorView];
 }
 
 - (NSColor*) colorAtColumn:(NSUInteger)columnIndex row:(NSUInteger)rowIndex {
-    return [_colorSelectorView.delegate colorSelectorView:_colorSelectorView colorAtRow:rowIndex column:columnIndex];
+    return [_colorSelectorView.delegate colorWell:_colorSelectorView colorAtColumn:columnIndex row:rowIndex];
 }
 
 
