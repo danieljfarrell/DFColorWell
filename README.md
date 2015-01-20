@@ -1,4 +1,4 @@
-DFColorSelector
+DFColorWell
 ---------------
 
 ![DFColorWell example.](https://github.com/danieljfarrell/DFColorWell/blob/master/screenshot.png)
