@@ -19,6 +19,9 @@
 
 #define COLOR_DRAG_RECT_SIDE_LENGTH 18.0
 
+static void * kDFColorCellAreaUserInfo = &kDFColorCellAreaUserInfo;
+static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
+
 @interface DFColorWell ()
 
 @property BOOL shouldDrawMouseOverIndicator;
@@ -41,10 +44,16 @@
 
 
 - (void) awakeFromNib {
+    
+    // Layout
+    
     [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
     [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationVertical];
+    
+    // Drag and drop
     [self registerForDraggedTypes:@[NSPasteboardTypeColor]];
     
+    // Mouse interactions
     if (_trackingArea == nil) {
         
         NSTrackingAreaOptions options = (NSTrackingActiveAlways |
@@ -58,11 +67,32 @@
         [self addTrackingArea:_trackingArea];
     }
     
+    
+    [self addToolTipRect:[self _colorAreaRect] owner:self userData:kDFColorCellAreaUserInfo];
+    [self addToolTipRect:[self _buttonAreaRect] owner:self userData:kDFButtonAreaUserInfo];
+    
+    // Default, non-nil, color
     if (self.color == nil) {
         self.color = [NSColor whiteColor];
     }
 }
 
+#pragma Tooltips
+
+- (NSString*) view:(NSView *)view stringForToolTip:(NSToolTipTag)tag point:(NSPoint)point userData:(void *)data {
+    
+    if (view == self) {
+        
+        if (data == kDFColorCellAreaUserInfo) {
+            return @"Click to choose a colour";
+        }
+        
+        if (data == kDFButtonAreaUserInfo) {
+            return @"Click to show more colours or show your own.";
+        }
+    }
+    return nil;
+}
 
 #pragma mark - Custom drawing
 
