@@ -16,8 +16,6 @@ Things that need adding & improvements
 
 * Colours with alpha components have no special treatment (i.e. the colour cell should split along the hypotenuse: the upper triangle contains the colour, the lower triangle contains the alpha value). They should be displayed in the same way a standard OS X controls.
 
-* Tooltips are not implemented.
-
 * Want to add the ability to display custom views in the popover (from a user specified content view controller), this will enable users to design their own layout of colour cells etc.
 
 * General refactor which improves code reusability, isolation of commonly draw elements (e.g. the colour cell) etc.
