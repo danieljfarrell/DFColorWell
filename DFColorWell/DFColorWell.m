@@ -17,6 +17,7 @@
 #define MOUSE_OVER_INDICATOR_PADDING 4.0
 #define MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH 3.0
 
+#define BUTTON_RADIUS 4.0
 #define COLOR_DRAG_RECT_SIDE_LENGTH 18.0
 
 static void * kDFColorCellAreaUserInfo = &kDFColorCellAreaUserInfo;
@@ -156,47 +157,40 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 }
 
 - (void) _drawColorRegion {
-    /* Draw the color area */
     
-    NSBezierPath *colorPath = [NSBezierPath bezierPathWithRoundedRect:[self _colorAreaRect] xRadius:4.0 yRadius:4.0];
+    /* Draw the color area */
+
+    // Black and white upper and lower triangle in the background
+    NSBezierPath *colorPath = [self _colorAreaPath];
+    [[NSColor blackColor] setFill];
+    [colorPath fill];
+    [[NSColor whiteColor] setFill];
+    [[self _colorAreaPathLowerTriangle] fill];
+    
+    // Now over fill with the actual color
     [_color setFill];
     [colorPath fill];
-    
-    // Fill over the left edge
-    NSRect rect1 = NSMakeRect(NSMaxX([self _colorAreaRect]) - 4.0,
-                              NSMinY([self _colorAreaRect]),
-                              4.0,
-                              NSHeight([self _colorAreaRect]));
-    [[NSBezierPath bezierPathWithRect:rect1] fill];
     
     if (_shouldDrawMouseOverIndicator) {
         [self _drawMouseOverIndicator];
         [self _drawMouseOverIndicatorTick];
     }
-    
 }
 
 - (void) _drawButtonRegion {
  
     /* Draw the color area */
-    NSBezierPath *buttonPath = [NSBezierPath bezierPathWithRoundedRect:[self _buttonAreaRect] xRadius:4.0 yRadius:4.0];
     
-    NSColor *color = [NSColor controlColor];
+    [[NSColor controlColor] setFill];
     if (_shouldDrawButtonRegionWithSelectedColor) {
-        color = [NSColor alternateSelectedControlColor];
+        [[NSColor alternateSelectedControlColor] setFill];
+        
     } else if (_shouldDrawDarkerButtonRegion) {
-        color = [NSColor colorWithCalibratedWhite:0.825 alpha:1.0];
+        [[NSColor colorWithCalibratedWhite:0.825 alpha:1.0] setFill];
     }
-    [color setFill];
-    [buttonPath fill];
     
-    // Fill over the right edge
-    NSRect rect2 = NSMakeRect(NSMinX([self _buttonAreaRect]),
-                              NSMinY([self _buttonAreaRect]),
-                              4.0,
-                              NSHeight([self _buttonAreaRect]));
-    [[NSBezierPath bezierPathWithRect:rect2] fill];
-    
+    NSBezierPath *path = [self _buttonAreaPath];
+    [path fill];
     
     // Draw the image centre in this region
     NSImage *image = [NSImage imageNamed:@"DFColorWheel2"];
@@ -207,10 +201,9 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 - (void) _strokeBorderOfControl {
     
     /* Stroke the border */
-    NSRect fullRect = NSUnionRect([self _colorAreaRect], [self _buttonAreaRect]);
-    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
-    NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:fullRect xRadius:4.0 yRadius:4.0];
+    NSBezierPath *border = [self _controlOuterPath];
     [border setLineWidth:0.5];
+    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
     [border stroke];
     
 }
@@ -259,6 +252,119 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 - (NSRect) _colorAreaRect {
     return NSMakeRect(0.25, 0.25, INTRINSIC_WIDTH  - BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
 }
+
+- (NSBezierPath*) _colorAreaPath {
+    
+    NSRect rect = [self _colorAreaRect];
+    CGFloat r = BUTTON_RADIUS;
+    
+    NSPoint pt1 = NSMakePoint(NSMinX(rect) + r, NSMaxY(rect));
+    NSPoint pt2 = NSMakePoint(NSMinX(rect), NSMaxY(rect));
+    NSPoint pt3 = NSMakePoint(NSMinX(rect), NSMaxY(rect) - r);
+    NSPoint pt4 = NSMakePoint(NSMinX(rect), NSMinY(rect) + r);
+    NSPoint pt5 = NSMakePoint(NSMinX(rect), NSMinY(rect));
+    NSPoint pt6 = NSMakePoint(NSMinX(rect) + r, NSMinY(rect));
+    NSPoint pt7 = NSMakePoint(NSMaxX(rect), NSMinY(rect));
+    NSPoint pt8 = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
+    
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    [path moveToPoint:pt1];
+    [path appendBezierPathWithArcFromPoint:pt2 toPoint:pt3 radius:r];
+    [path lineToPoint:pt4];
+    [path appendBezierPathWithArcFromPoint:pt5 toPoint:pt6 radius:r];
+    [path lineToPoint:pt7];
+    [path lineToPoint:pt8];
+    [path closePath];
+    
+    return path;
+}
+
+- (NSBezierPath*) _colorAreaPathLowerTriangle {
+    
+    NSRect rect = [self _colorAreaRect];
+    CGFloat r = BUTTON_RADIUS;
+    
+    NSPoint pt1 = NSMakePoint(NSMinX(rect) - r, NSMinY(rect) - r);
+    NSPoint pt2 = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
+    NSPoint pt3 = NSMakePoint(NSMaxX(rect), NSMinY(rect));
+
+    
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    [path moveToPoint:pt1];
+    [path lineToPoint:pt2];
+    [path lineToPoint:pt3];
+    [path closePath];
+    
+    return path;
+}
+
+- (NSBezierPath*) _buttonAreaPath {
+    
+    
+    NSRect rect = [self _buttonAreaRect];
+    CGFloat r = BUTTON_RADIUS;
+    
+    NSPoint pt1 = NSMakePoint(NSMaxX(rect) - r, NSMaxY(rect));
+    NSPoint pt2 = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
+    NSPoint pt3 = NSMakePoint(NSMaxX(rect), NSMaxY(rect) - r);
+    NSPoint pt4 = NSMakePoint(NSMaxX(rect), NSMinY(rect) + r);
+    NSPoint pt5 = NSMakePoint(NSMaxX(rect), NSMinY(rect));
+    NSPoint pt6 = NSMakePoint(NSMaxX(rect) - r, NSMinY(rect));
+    NSPoint pt7 = NSMakePoint(NSMinX(rect), NSMinY(rect));
+    NSPoint pt8 = NSMakePoint(NSMinX(rect), NSMaxY(rect));
+    
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    [path moveToPoint:pt1];
+    [path appendBezierPathWithArcFromPoint:pt2 toPoint:pt3 radius:r];
+    [path lineToPoint:pt4];
+    [path appendBezierPathWithArcFromPoint:pt5 toPoint:pt6 radius:r];
+    [path lineToPoint:pt7];
+    [path lineToPoint:pt8];
+    [path closePath];
+    
+    return path;
+}
+
+- (NSBezierPath*) _controlOuterPath {
+    
+    NSRect rect = NSUnionRect([self _colorAreaRect], [self _buttonAreaRect]);
+    
+    CGFloat r = BUTTON_RADIUS;
+    
+    // Top left
+    NSPoint pt1 = NSMakePoint(NSMinX(rect) + r, NSMaxY(rect));
+    NSPoint pt2 = NSMakePoint(NSMinX(rect), NSMaxY(rect));
+    NSPoint pt3 = NSMakePoint(NSMinX(rect), NSMaxY(rect) - r);
+    // Bottom left
+    NSPoint pt4 = NSMakePoint(NSMinX(rect), NSMinY(rect) + r);
+    NSPoint pt5 = NSMakePoint(NSMinX(rect), NSMinY(rect));
+    NSPoint pt6 = NSMakePoint(NSMinX(rect) + r, NSMinY(rect));
+    // Bottom right
+    NSPoint pt7 = NSMakePoint(NSMaxX(rect) - r, NSMinY(rect));
+    NSPoint pt8 = NSMakePoint(NSMaxX(rect), NSMinY(rect));
+    NSPoint pt9 = NSMakePoint(NSMaxX(rect), NSMinY(rect) + r);
+    // Top right
+    NSPoint pt10 = NSMakePoint(NSMaxX(rect), NSMaxY(rect) - r);
+    NSPoint pt11 = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
+    NSPoint pt12 = NSMakePoint(NSMaxX(rect) - r, NSMaxY(rect));
+    
+    
+    // Create rounded rect
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    [path moveToPoint:pt1];
+    [path appendBezierPathWithArcFromPoint:pt2 toPoint:pt3 radius:r];
+    [path lineToPoint:pt4];
+    [path appendBezierPathWithArcFromPoint:pt5 toPoint:pt6 radius:r];
+    [path lineToPoint:pt7];
+    [path appendBezierPathWithArcFromPoint:pt8 toPoint:pt9 radius:r];
+    [path lineToPoint:pt10];
+    [path appendBezierPathWithArcFromPoint:pt11 toPoint:pt12 radius:r];
+    [path closePath];
+    
+    return path;
+    
+}
+
 
 - (NSRect) _buttonAreaRect {
     NSRect colorRect = [self _colorAreaRect];
@@ -396,6 +502,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
         [self setNeedsDisplay:YES];
         
         NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+        panel.showsAlpha = YES;
         panel.target = self;
         panel.action = @selector(handleColorPanelColorSelectionAction:);
         [panel orderFront:nil];
