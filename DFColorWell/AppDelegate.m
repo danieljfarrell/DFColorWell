@@ -81,7 +81,6 @@
 }
 
 - (NSColor*) colorWell:(DFColorWell *)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row {
-    
     NSString *key = [NSString stringWithFormat:@"(%lu,%lu)", (unsigned long)column,(unsigned long)row];
     NSColor *color = _colors[key];
     return color;

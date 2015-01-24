@@ -21,8 +21,16 @@
 
 @interface DFColorWell : NSView <NSDraggingSource, NSDraggingDestination>
 
+/** The color that is current displayed in the control.
+ 
+ This cannot be nil.
+ 
+ KVO observable.
+ */
 @property NSColor *color;
 
+
+/** A delegate which implements the DFColorWellDelegate protocol.*/
 @property IBOutlet id <DFColorWellDelegate> delegate;
 
 #pragma mark - Drawing convenience methods

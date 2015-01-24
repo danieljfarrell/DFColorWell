@@ -18,7 +18,12 @@
 #define MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH 3.0
 
 #define BUTTON_RADIUS 4.0
-#define COLOR_DRAG_RECT_SIDE_LENGTH 18.0
+#define BUTTON_IMAGE_INSET 3.0
+#define DRAG_IMAGE_SIDE_LENGTH 18.0
+#define DRAG_IMAGE_PADDING 3.0
+#define DRAG_IMAGE_CORNER_RADIUS 2.0
+#define DRAG_IMAGE_X_OFFSET 5.0
+#define DRAG_IMAGE_Y_OFFSET 0.0
 
 static void * kDFColorCellAreaUserInfo = &kDFColorCellAreaUserInfo;
 static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
@@ -33,7 +38,9 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 
 @property BOOL shouldDrawFocusRing;
 
-@property NSTrackingArea *trackingArea;
+@property NSTrackingArea *colorSwatchTrackingArea;
+
+@property NSTrackingArea *buttonTrackingArea;
 
 @property NSBezierPath *controlColorSwatchPath;
 
@@ -62,26 +69,26 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [self registerForDraggedTypes:@[NSPasteboardTypeColor]];
     
     // Mouse interactions
-    if (_trackingArea == nil) {
-        
-        NSTrackingAreaOptions options = (NSTrackingActiveAlways |
-                                         NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved);
-        
-        _trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds]
-                                                     options:options
-                                                       owner:self
-                                                    userInfo:nil];
-        [self addTrackingArea:_trackingArea];
-    }
+    NSTrackingAreaOptions options = (NSTrackingActiveInKeyWindow |
+                                     NSTrackingMouseEnteredAndExited );
+    
+    
+    _colorSwatchTrackingArea = [[NSTrackingArea alloc] initWithRect:[self _controlColorSwatchFrame]
+                                                            options:options
+                                                              owner:self
+                                                           userInfo:nil];
+    
+    _buttonTrackingArea = [[NSTrackingArea alloc] initWithRect:[self _controlButtonFrame]
+                                                       options:options
+                                                         owner:self
+                                                      userInfo:nil];
+    
+    
+    [self addTrackingArea:_colorSwatchTrackingArea];
+    [self addTrackingArea:_buttonTrackingArea];
     
     [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorCellAreaUserInfo];
     [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonAreaUserInfo];
-    
-    // Cache paths
-//    _controlColorSwatchPath = [self _colorAreaPath];
-//    _controlButtonPath = [self _buttonAreaPath];
-//    _controlOuterBorderPath = [self _controlOuterPath];
-    
     
     // Default, non-nil, color
     if (self.color == nil) {
@@ -257,7 +264,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     
     // Draw the image centre in this region
     NSImage *image = [NSImage imageNamed:@"DFColorWheel2"];
-    [image drawInRect:NSInsetRect([self _controlButtonFrame], 3.0, 3.0)];
+    [image drawInRect:NSInsetRect([self _controlButtonFrame], BUTTON_IMAGE_INSET, BUTTON_IMAGE_INSET)];
     
 }
 
@@ -432,94 +439,84 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 
 - (void) mouseEntered:(NSEvent *)theEvent {
     
-    /* Set visual highlight when the mouse enters the view */
-    NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
+    NSTrackingArea *trackingArea = [theEvent trackingArea];
+    if (trackingArea == nil) {
+        return;
+    }
+    
+    if (trackingArea == _colorSwatchTrackingArea) {
         _shouldDrawMouseOverIndicator = YES;
-    } else {
-        _shouldDrawMouseOverIndicator = NO;
-    }
-    [self setNeedsDisplay:YES];
-}
-
-
-- (void) mouseMoved:(NSEvent *)theEvent {
-    
-    /* The code here is horrible!
-     
-     All we are doing is checking:
-        1. which part of the view are we in (color region or button region).
-        2. If the state has changed since the last time the -mouseMoved: method
-            was called then we need to call -setNeedsDisplay:
-     
-     TODO: This horrible code be avoided by having two tracking areas for the different regions.
-     
-     */
-    BOOL needToRedraw = NO;
-    NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    
-    // Check for mouse in color region
-    if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
-        
-        if (_shouldDrawMouseOverIndicator != YES) {
-            needToRedraw = YES;
-        }
-        _shouldDrawMouseOverIndicator = YES;
-        
-    } else {
-        
-        if (_shouldDrawMouseOverIndicator != NO) {
-            needToRedraw = YES;
-        }
-        _shouldDrawMouseOverIndicator = NO;
-    }
-    
-    // Check for mouse in button region
-    if (NSPointInRect(locationInView, [self _controlButtonFrame]) ) {
-        // Check if we did change
-        if (YES != _shouldDrawDarkerButtonRegion) {
-            needToRedraw = YES;
-        }
-        _shouldDrawDarkerButtonRegion = YES;
-    } else {
-        // Check if we did change
-        if (NO != _shouldDrawDarkerButtonRegion) {
-            needToRedraw = YES;
-        }
-        _shouldDrawDarkerButtonRegion = NO;
-    }
-    
-    if (needToRedraw) {
         [self setNeedsDisplay:YES];
     }
     
+    if (trackingArea == _buttonTrackingArea) {
+        _shouldDrawDarkerButtonRegion = YES;
+        [self setNeedsDisplay:YES];
+    }
 }
 
 - (void) mouseExited:(NSEvent *)theEvent {
     
-    /* On mouse exit reset all highlights that indicated 
-     the mouse is inside the view. */
-    _shouldDrawMouseOverIndicator = NO;
-    _shouldDrawDarkerButtonRegion = NO;
-    [self setNeedsDisplay:YES];
+    NSTrackingArea *trackingArea = [theEvent trackingArea];
+    if (trackingArea == nil) {
+        return;
+    }
+    
+    if (trackingArea == _colorSwatchTrackingArea) {
+        // Exited the color swatch
+        _shouldDrawMouseOverIndicator = NO;
+        [self setNeedsDisplay:YES];
+    }
+    
+    if (trackingArea == _buttonTrackingArea) {
+        _shouldDrawDarkerButtonRegion = NO;
+        [self setNeedsDisplay:YES];
+    }
 }
 
-
 - (void) mouseUp:(NSEvent *)theEvent {
-    
+
     /* Mouse down either launches a popover or the color
      panel depending on the location in the view. */
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
-        [self _handleMouseDownInColorRect];
+        [self _handleMouseUpInColorRect];
     } else if (NSPointInRect(locationInView, [self _controlButtonFrame])){
-        [self _handleMouseDownInButtonRect];
+        [self _handleMouseUpInButtonRect];
     }
+}
+
+- (void) mouseDragged:(NSEvent *)theEvent {
+    
+    id propertyListRep = [self.color pasteboardPropertyListForType:NSPasteboardTypeColor];
+    NSPasteboardItem *pbItem = [[NSPasteboardItem alloc] initWithPasteboardPropertyList:propertyListRep ofType:NSPasteboardTypeColor];
+    NSDraggingItem *item = [[NSDraggingItem alloc] initWithPasteboardWriter:pbItem];
+    
+    NSColor *dragColor = [self.color copy];
+    NSImage *contentImage = [NSImage imageWithSize:NSMakeSize(DRAG_IMAGE_SIDE_LENGTH, DRAG_IMAGE_SIDE_LENGTH) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+        
+        NSRect imageRect = NSInsetRect(dstRect, DRAG_IMAGE_PADDING, DRAG_IMAGE_PADDING);
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:imageRect
+                                                             xRadius:DRAG_IMAGE_CORNER_RADIUS
+                                                             yRadius:DRAG_IMAGE_CORNER_RADIUS];
+        [path setLineWidth:0.0];
+        [[[NSColor darkGrayColor] colorWithAlphaComponent:0.5] setStroke];
+        [dragColor setFill];
+        [path fill];
+        [path stroke];
+        return YES;
+    }];
+    
+    NSRect dragImageFrame = NSMakeRect(DRAG_IMAGE_X_OFFSET, DRAG_IMAGE_Y_OFFSET, DRAG_IMAGE_SIDE_LENGTH, DRAG_IMAGE_SIDE_LENGTH);
+    [item setDraggingFrame:dragImageFrame contents:contentImage];
+    id source = (id <NSDraggingSource>) self;
+    [self beginDraggingSessionWithItems:@[item] event:theEvent source:source];
+    
 }
 
 #pragma mark - Mouse Clicking
 
-- (void) _handleMouseDownInColorRect {
+- (void) _handleMouseUpInColorRect {
     
 
     if (_colorGridViewController == nil) {
@@ -541,7 +538,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [_popover showRelativeToRect:[self _controlColorSwatchFrame] ofView:self preferredEdge:NSMinYEdge];
 }
 
-- (void) _handleMouseDownInButtonRect {
+- (void) _handleMouseUpInButtonRect {
     
     if (_shouldDrawButtonRegionWithSelectedColor == YES) {
         
@@ -594,8 +591,15 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 @synthesize color = _color;
 
 - (void) setColor:(NSColor *)color {
+    
+    if (_color == nil) {
+        return;
+    }
+    
+    [self willChangeValueForKey:@"color"];
     _color = color;
     [self setNeedsDisplay:YES];
+    [self didChangeValueForKey:@"color"];
     
     /* Hook into the popover here and if show, close it.*/
     if (_popover) {
@@ -643,40 +647,9 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     }
 }
 
-- (void)draggingSession:(NSDraggingSession *)session movedToPoint:(NSPoint)screenPoint {
-    //NSLog(@"%@", NSStringFromPoint(screenPoint));
-}
-
-- (void) mouseDragged:(NSEvent *)theEvent {
-    
-    
-    id propertyListRep = [self.color pasteboardPropertyListForType:NSPasteboardTypeColor];
-    NSPasteboardItem *pbItem = [[NSPasteboardItem alloc] initWithPasteboardPropertyList:propertyListRep ofType:NSPasteboardTypeColor];
-    NSDraggingItem *item = [[NSDraggingItem alloc] initWithPasteboardWriter:pbItem];
-    
-    NSColor *dragColor = [self.color copy];
-    NSImage *contentImage = [NSImage imageWithSize:NSMakeSize(COLOR_DRAG_RECT_SIDE_LENGTH, COLOR_DRAG_RECT_SIDE_LENGTH) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
-        
-        CGFloat padding = 3.0;
-        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(dstRect, padding, padding) xRadius:2.0 yRadius:2.0];
-        [path setLineWidth:0.5];
-        [[[NSColor darkGrayColor] colorWithAlphaComponent:0.5] setStroke];
-        [dragColor setFill];
-        [path fill];
-        [path stroke];
-        return YES;
-    }];
-    
-    [item setDraggingFrame:NSMakeRect(5.0, 0.0, COLOR_DRAG_RECT_SIDE_LENGTH, COLOR_DRAG_RECT_SIDE_LENGTH) contents:contentImage];
-    id source = (id <NSDraggingSource>) self;
-    [self beginDraggingSessionWithItems:@[item] event:theEvent source:source];
-}
-
-
 #pragma mark - Dragging Destination
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
     
     // Don't allow drag and drop to self
     if ([sender draggingSource] == self) {
@@ -685,7 +658,6 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     
     NSColor *possiblyValidColor = [NSColor colorFromPasteboard:[sender draggingPasteboard]];
     if (possiblyValidColor) {
-        //NSLog(@"%@", @"Should draw highlight around view.");
         _shouldDrawFocusRing = YES;
         [self setNeedsDisplay:YES];
     }

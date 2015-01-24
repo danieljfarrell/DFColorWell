@@ -5,7 +5,7 @@ DFColorWell
 
 An implementation of the colour well seen in Pages 5, Numbers 3 and Keynote 6.
 
-**I implemented this in an afternoon, this project is not a good example of beautiful code!** However, it is stable and reasonably efficient when redrawing. All custom drawing is done with NSBezierPath, the usual NSEvent methods (-mouseDown:, -mouseUp:, -mouseDrag) are implemented to keep track of the control's state and turn on or off different drawing options. Colours can be drag and dropped into or out of the colour well. Delegate methods should be implemented to fill the popover grid with colour cells.
+All custom drawing is done with NSBezierPath (cached where possible), the usual NSEvent methods (-mouseDown:, -mouseUp:, -mouseDrag) are implemented to keep track of the control's state and turn on or off different drawing options. Colours can be dragged and dropped into or out of the colour well using the systems NSColorPanel. Delegate methods should be implemented to fill the popover grid with colour cells.
 
 Any improvements welcomed. 
 
@@ -16,14 +16,20 @@ Things that need adding & improvements
 
 * Want to add the ability to display custom views in the popover (from a user specified content view controller), this will enable users to design their own layout of colour cells etc.
 
-* General refactor which improves code reusability, isolation of commonly draw elements (e.g. the colour cell) etc.
-
 Usage
 -----
 
 1. Drag out an NSView into a XIB
 2. Change the class to `DFColorWell`
-3. Add placeholder intrinsic size. **NB** DFColorWell sets the `intrinsicContentSize` because the control will always have a fixed size, so size constraints should not be used.
+
+   ![Changing the custom class screenshot](http://i.imgur.com/YdQ6qbb.png)
+   
+3. Add placeholder intrinsic size to 67 by 23. 
+   
+   **NB** DFColorWell sets the `intrinsicContentSize` because the control will always have a fixed size, so size constraints should not be used.
+
+   ![Setting the placeholder intrinsic content size](http://i.imgur.com/5X0KuA5.png)
+
 4. Implement all the **required** delegate methods which fills the pop over with different colours:
 
 ```
