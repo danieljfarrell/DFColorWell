@@ -5,7 +5,7 @@ DFColorWell
 
 An implementation of the colour well seen in Pages 5, Numbers 3 and Keynote 6.
 
-**I implemented this in an afternoon, this project is not a good example of beautiful code!** However, it is stable and reasonably efficient when redrawing. All custom drawing is done with NSBezierPath, the usual NSEvent methods (-mouseDown:, -mouseUp:, -mouseDrag) are implemented to keep track of the control's state and turn on or off different drawing options. Colours can be drag and dropped into or out of the colour well. Delegate methods should be implemented to fill the popover grid with colour cells.
+All custom drawing is done with NSBezierPath (cached where possible), the usual NSEvent methods (-mouseDown:, -mouseUp:, -mouseDrag) are implemented to keep track of the control's state and turn on or off different drawing options. Colours can be dragged and dropped into or out of the colour well using the systems NSColorPanel. Delegate methods should be implemented to fill the popover grid with colour cells.
 
 Any improvements welcomed. 
 
@@ -15,8 +15,6 @@ Things that need adding & improvements
 * I wrote this on rMBP running OSX 10.10 so there may be some retina specific code which does not look good on other screens.
 
 * Want to add the ability to display custom views in the popover (from a user specified content view controller), this will enable users to design their own layout of colour cells etc.
-
-* General refactor which improves code reusability, isolation of commonly draw elements (e.g. the colour cell) etc.
 
 Usage
 -----
