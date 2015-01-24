@@ -268,7 +268,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [_controlButtonPath fill];
     
     // Draw the image centre in this region
-    NSImage *image = [NSImage imageNamed:@"DFColorWheel2"];
+    NSImage *image = [NSImage imageNamed:@"DFColorWheel"];
     [image drawInRect:NSInsetRect([self _controlButtonFrame], BUTTON_IMAGE_INSET, BUTTON_IMAGE_INSET)];
     
 }
