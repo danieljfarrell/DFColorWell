@@ -104,7 +104,7 @@ Pod::Spec.new do |s|
   # s.resource  = 'Images.xcassets/DFColorWheel.imageset/DFColorWheel.png'
   # s.resources = "Resources/*.png"
   # s.resource_bundle = { 'ResourceBundle' => [ 'Images.xcassets/DFColorWheel.imageset/DFColorWheel.png', ] }
-  s.resource_bundle = { 'Assets' => 'Images.xcassets/DFColorWheel.imageset/DFColorWheel.png' }
+  s.resource_bundle = "DFColorWell/Images.xcassets"
 
   # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
 
