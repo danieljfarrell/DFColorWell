@@ -64,13 +64,7 @@
             if (fillColor) {
                 if (fillColor != (id)[NSNull null]) {
                     NSRect frame = [self _frameForColorAreaAtColumn:i row:j];
-                    //NSLog(@"%@", NSStringFromRect(frame));
-                    NSBezierPath *path = [NSBezierPath bezierPathWithRect:frame];
-                    [fillColor setFill];
-                    [path fill];
-                    [path setLineWidth:_cellBorderLinewidth];
-                    [_cellBorderColor setStroke];
-                    [path stroke];
+                    [DFColorWell drawColorSwatchWithFrame:frame color:fillColor shouldDrawBorder:YES];
                 }
             }
         }
@@ -119,7 +113,7 @@
             NSBezierPath *outerPath = [NSBezierPath bezierPathWithRect:outerRect];
             [outerPath setLineWidth:0.5];
             [[NSColor whiteColor] setFill];
-            [[NSColor lightGrayColor] setStroke];
+            [[NSColor darkGrayColor] setStroke];
             [outerPath fill];
             [outerPath stroke];
             

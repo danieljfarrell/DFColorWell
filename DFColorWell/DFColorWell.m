@@ -35,6 +35,14 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 
 @property NSTrackingArea *trackingArea;
 
+@property NSBezierPath *controlColorSwatchPath;
+
+@property NSBezierPath *controlButtonPath;
+
+@property NSBezierPath *controlOuterBorderPath;
+
+// Popover and content view controller
+
 @property DFColorGridViewController *colorGridViewController;
 
 @property NSPopover *popover;
@@ -47,7 +55,6 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 - (void) awakeFromNib {
     
     // Layout
-    
     [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
     [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationVertical];
     
@@ -64,13 +71,17 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
                                                      options:options
                                                        owner:self
                                                     userInfo:nil];
-        
         [self addTrackingArea:_trackingArea];
     }
     
+    [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorCellAreaUserInfo];
+    [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonAreaUserInfo];
     
-    [self addToolTipRect:[self _colorAreaRect] owner:self userData:kDFColorCellAreaUserInfo];
-    [self addToolTipRect:[self _buttonAreaRect] owner:self userData:kDFButtonAreaUserInfo];
+    // Cache paths
+//    _controlColorSwatchPath = [self _colorAreaPath];
+//    _controlButtonPath = [self _buttonAreaPath];
+//    _controlOuterBorderPath = [self _controlOuterPath];
+    
     
     // Default, non-nil, color
     if (self.color == nil) {
@@ -78,7 +89,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     }
 }
 
-#pragma Tooltips
+#pragma mark - Tooltips
 
 - (NSString*) view:(NSView *)view stringForToolTip:(NSToolTipTag)tag point:(NSPoint)point userData:(void *)data {
     
@@ -95,167 +106,34 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     return nil;
 }
 
-#pragma mark - Custom drawing
+#pragma mark - Control private drawing methods
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
-    [self _drawColorRegion];
-    [self _drawButtonRegion];
-    [self _strokeBorderOfControl];
+    [self _drawControlColorSwatch];
+    [self _drawControlButton];
+    [self _drawControlOuterBorder];
     [self _drawSeparatorLine];
     
     if (_shouldDrawFocusRing) {
-//        NSSetFocusRingStyle(NSFocusRingOnly);
-//        NSRectFill([self _colorAreaRect]);
-        [self _drawFocusRingIndicator];
-    }
-    
-    //[[NSBezierPath bezierPathWithRect:[self bounds]] stroke];
-}
-
-- (void) _drawFocusRingIndicator {
-    
-    //[NSGraphicsContext saveGraphicsState];
-    
-    NSGradient *gradientFill = [[NSGradient alloc] initWithStartingColor:[NSColor alternateSelectedControlColor] endingColor:[[NSColor alternateSelectedControlColor] blendedColorWithFraction:0.4 ofColor:[NSColor whiteColor]]];
-    
-    CGFloat padding = 4.0;
-    NSRect cutRect = NSInsetRect([self _colorAreaRect], padding, padding);
-    NSBezierPath *cutPath = [NSBezierPath bezierPathWithRoundedRect:cutRect
-                                                            xRadius:0.0
-                                                            yRadius:0.0];
-    
-    NSBezierPath *outPath = [NSBezierPath bezierPathWithRoundedRect:[self _colorAreaRect]
-                                                            xRadius:padding
-                                                            yRadius:padding];
-    
-    cutPath = [cutPath bezierPathByReversingPath];
-    [outPath appendBezierPath:cutPath];
-    [[NSColor alternateSelectedControlColor] setFill];
-    //[outPath fill];
-    [gradientFill drawInBezierPath:outPath angle:90.0];
-    
-    // Fill over the left edge
-    NSRect rect1 = NSMakeRect(NSMaxX([self _colorAreaRect]) - 4.0,
-                              NSMinY([self _colorAreaRect]),
-                              4.0,
-                              NSHeight([self _colorAreaRect]));
-    //[[NSBezierPath bezierPathWithRect:rect1] fill];
-    [gradientFill drawInBezierPath:[NSBezierPath bezierPathWithRect:rect1] angle:90.0];
-    
-    // Fill the rounded corner on the right hand side
-    
-    
-}
-
-- (NSRect) _frameForMouseOverIndicator {
-    
-    NSRect colorRect = [self _colorAreaRect];
-    NSRect basicRect = NSMakeRect(NSMaxX(colorRect) - MOUSE_OVER_INDICATOR_SIDE_LENGTH, 0.5 * (INTRINSIC_HEIGHT - MOUSE_OVER_INDICATOR_SIDE_LENGTH), MOUSE_OVER_INDICATOR_SIDE_LENGTH, MOUSE_OVER_INDICATOR_SIDE_LENGTH);
-    return NSOffsetRect(basicRect, -MOUSE_OVER_INDICATOR_PADDING, 0.0);
-}
-
-- (void) _drawColorRegion {
-    
-    /* Draw the color area */
-
-    // Black and white upper and lower triangle in the background
-    NSBezierPath *colorPath = [self _colorAreaPath];
-    [[NSColor blackColor] setFill];
-    [colorPath fill];
-    [[NSColor whiteColor] setFill];
-    [[self _colorAreaPathLowerTriangle] fill];
-    
-    // Now over fill with the actual color
-    [_color setFill];
-    [colorPath fill];
-    
-    if (_shouldDrawMouseOverIndicator) {
-        [self _drawMouseOverIndicator];
-        [self _drawMouseOverIndicatorTick];
+        [self _drawInternalFocusRingIndicator];
     }
 }
 
-- (void) _drawButtonRegion {
+#pragma mark Color swatch
+
+/* The basic frame of the control's color swatch.
  
-    /* Draw the color area */
-    
-    [[NSColor controlColor] setFill];
-    if (_shouldDrawButtonRegionWithSelectedColor) {
-        [[NSColor alternateSelectedControlColor] setFill];
-        
-    } else if (_shouldDrawDarkerButtonRegion) {
-        [[NSColor colorWithCalibratedWhite:0.825 alpha:1.0] setFill];
-    }
-    
-    NSBezierPath *path = [self _buttonAreaPath];
-    [path fill];
-    
-    // Draw the image centre in this region
-    NSImage *image = [NSImage imageNamed:@"DFColorWheel2"];
-    [image drawInRect:NSInsetRect([self _buttonAreaRect], 3.0, 3.0)];
-    
-}
-
-- (void) _strokeBorderOfControl {
-    
-    /* Stroke the border */
-    NSBezierPath *border = [self _controlOuterPath];
-    [border setLineWidth:0.5];
-    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
-    [border stroke];
-    
-}
-
-- (void) _drawSeparatorLine {
-    NSPoint startPoint = NSMakePoint(NSMaxX([self _colorAreaRect]), NSMaxY([self _colorAreaRect]));
-    NSPoint endPoint = NSMakePoint(NSMaxX([self _colorAreaRect]), NSMinY([self _colorAreaRect]));
-    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
-    NSBezierPath *line = [NSBezierPath bezierPath];
-    [line moveToPoint:startPoint];
-    [line lineToPoint:endPoint];
-    [line setLineWidth:0.5];
-    [line stroke];
-}
-
-- (void) _drawMouseOverIndicator {
-    
-    NSBezierPath* ovalPath = [NSBezierPath bezierPathWithOvalInRect:[self _frameForMouseOverIndicator]];
-    NSColor* color = [NSColor colorWithCalibratedWhite:0.4 alpha:0.4];
-    [color setFill];
-    [ovalPath fill];
-}
-
-
-- (void) _drawMouseOverIndicatorTick {
-    
-    
-    /* This is the white "tick" or chevron that appears in the circle to 
-     indicated that the popover can be launched by clicking the color segment.*/
-    NSRect frame = [self _frameForMouseOverIndicator];
-    NSPoint mid = NSMakePoint(NSMidX(frame), NSMidY(frame));
-    NSPoint secondPoint = NSMakePoint(mid.x, mid.y - MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH * 0.5);
-    NSPoint firstPoint = NSMakePoint(secondPoint.x - MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH, secondPoint.y + MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH);
-    NSPoint thridPoint = NSMakePoint(secondPoint.x + MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH, secondPoint.y + MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH);
-    
-    NSBezierPath *tickPath = [NSBezierPath bezierPath];
-    [tickPath moveToPoint:firstPoint];
-    [tickPath lineToPoint:secondPoint];
-    [tickPath lineToPoint:thridPoint];
-    [tickPath setLineWidth:1.0];
-    [[NSColor whiteColor] setStroke];
-    [tickPath stroke];
-    
-}
-
-- (NSRect) _colorAreaRect {
+ This frame used to generate a path with rounded corners for the control.
+ */
+- (NSRect) _controlColorSwatchFrame {
     return NSMakeRect(0.25, 0.25, INTRINSIC_WIDTH  - BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
 }
 
-- (NSBezierPath*) _colorAreaPath {
+- (NSBezierPath*) _generateControlColorSwatchPath {
     
-    NSRect rect = [self _colorAreaRect];
+    NSRect rect = [self _controlColorSwatchFrame];
     CGFloat r = BUTTON_RADIUS;
     
     NSPoint pt1 = NSMakePoint(NSMinX(rect) + r, NSMaxY(rect));
@@ -279,15 +157,14 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     return path;
 }
 
-- (NSBezierPath*) _colorAreaPathLowerTriangle {
+- (NSBezierPath*) _controlColorSwatchLowerTrianglePath {
     
-    NSRect rect = [self _colorAreaRect];
+    NSRect rect = [self _controlColorSwatchFrame];
     CGFloat r = BUTTON_RADIUS;
     
     NSPoint pt1 = NSMakePoint(NSMinX(rect) - r, NSMinY(rect) - r);
     NSPoint pt2 = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
     NSPoint pt3 = NSMakePoint(NSMaxX(rect), NSMinY(rect));
-
     
     NSBezierPath *path = [NSBezierPath bezierPath];
     [path moveToPoint:pt1];
@@ -298,21 +175,56 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     return path;
 }
 
-- (NSBezierPath*) _buttonAreaPath {
+- (void) _drawControlColorSwatch {
+    
+    /* Draw the color area */
+    
+    // Black and white upper and lower triangle in the background
+    if (_controlColorSwatchPath == nil) {
+        _controlColorSwatchPath = [self _generateControlColorSwatchPath];
+    }
+    
+    [[NSColor blackColor] setFill];
+    [_controlColorSwatchPath fill];
+    [[NSColor whiteColor] setFill];
+    [[self _controlColorSwatchLowerTrianglePath] fill];
+    
+    // Now over fill with the actual color
+    [_color setFill];
+    [_controlColorSwatchPath fill];
+    
+    if (_shouldDrawMouseOverIndicator) {
+        [self _drawMouseOverIndicator];
+        [self _drawMouseOverIndicatorChevron];
+    }
+}
+
+#pragma mark Button
+
+- (NSRect) _controlButtonFrame {
+    NSRect colorRect = [self _controlColorSwatchFrame];
+    return NSMakeRect(NSMaxX(colorRect) + 0.25, 0.25, BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
+}
+
+- (NSBezierPath*) _generatedButtonPath {
     
     
-    NSRect rect = [self _buttonAreaRect];
+    NSRect rect = [self _controlButtonFrame];
     CGFloat r = BUTTON_RADIUS;
     
+    // top right corner
     NSPoint pt1 = NSMakePoint(NSMaxX(rect) - r, NSMaxY(rect));
     NSPoint pt2 = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
     NSPoint pt3 = NSMakePoint(NSMaxX(rect), NSMaxY(rect) - r);
+    // bottom right corner
     NSPoint pt4 = NSMakePoint(NSMaxX(rect), NSMinY(rect) + r);
     NSPoint pt5 = NSMakePoint(NSMaxX(rect), NSMinY(rect));
     NSPoint pt6 = NSMakePoint(NSMaxX(rect) - r, NSMinY(rect));
+    // bottom left and top right corners
     NSPoint pt7 = NSMakePoint(NSMinX(rect), NSMinY(rect));
     NSPoint pt8 = NSMakePoint(NSMinX(rect), NSMaxY(rect));
     
+    // Create path with rounded corners
     NSBezierPath *path = [NSBezierPath bezierPath];
     [path moveToPoint:pt1];
     [path appendBezierPathWithArcFromPoint:pt2 toPoint:pt3 radius:r];
@@ -325,9 +237,35 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     return path;
 }
 
-- (NSBezierPath*) _controlOuterPath {
+- (void) _drawControlButton {
     
-    NSRect rect = NSUnionRect([self _colorAreaRect], [self _buttonAreaRect]);
+    /* Draw the button area */
+    
+    if (_controlButtonPath == nil) {
+        _controlButtonPath = [self _generatedButtonPath];
+    }
+    
+    [[NSColor controlColor] setFill];
+    if (_shouldDrawButtonRegionWithSelectedColor) {
+        [[NSColor alternateSelectedControlColor] setFill];
+        
+    } else if (_shouldDrawDarkerButtonRegion) {
+        [[NSColor colorWithCalibratedWhite:0.825 alpha:1.0] setFill];
+    }
+    
+    [_controlButtonPath fill];
+    
+    // Draw the image centre in this region
+    NSImage *image = [NSImage imageNamed:@"DFColorWheel2"];
+    [image drawInRect:NSInsetRect([self _controlButtonFrame], 3.0, 3.0)];
+    
+}
+
+#pragma mark Control border
+
+- (NSBezierPath*) _generateControlOuterBorderPath {
+    
+    NSRect rect = NSUnionRect([self _controlColorSwatchFrame], [self _controlButtonFrame]);
     
     CGFloat r = BUTTON_RADIUS;
     
@@ -365,10 +303,128 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     
 }
 
+- (void) _drawControlOuterBorder {
+    
+    if (_controlOuterBorderPath == nil) {
+        _controlOuterBorderPath = [self _generateControlOuterBorderPath];
+    }
+    
+    /* Stroke the border */
+    [_controlOuterBorderPath setLineWidth:0.5];
+    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
+    [_controlOuterBorderPath stroke];
+}
 
-- (NSRect) _buttonAreaRect {
-    NSRect colorRect = [self _colorAreaRect];
-    return NSMakeRect(NSMaxX(colorRect) + 0.25, 0.25, BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
+- (void) _drawSeparatorLine {
+    NSPoint startPoint = NSMakePoint(NSMaxX([self _controlColorSwatchFrame]), NSMaxY([self _controlColorSwatchFrame]));
+    NSPoint endPoint = NSMakePoint(NSMaxX([self _controlColorSwatchFrame]), NSMinY([self _controlColorSwatchFrame]));
+    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
+    NSBezierPath *line = [NSBezierPath bezierPath];
+    [line moveToPoint:startPoint];
+    [line lineToPoint:endPoint];
+    [line setLineWidth:0.5];
+    [line stroke];
+}
+
+#pragma mark Focus ring on drag
+
+- (void) _drawInternalFocusRingIndicator {
+    
+    
+    NSColor *startingColor = [NSColor alternateSelectedControlColor];
+    NSColor *endingColor = [[NSColor alternateSelectedControlColor] blendedColorWithFraction:0.4 ofColor:[NSColor whiteColor]];
+    NSGradient *gradientFill = [[NSGradient alloc] initWithStartingColor:startingColor
+                                                             endingColor:endingColor];
+    
+    CGFloat padding = 4.0;
+    NSRect stampRect = NSInsetRect([self _controlColorSwatchFrame], padding, padding);
+    NSBezierPath *stampPath = [NSBezierPath bezierPathWithRect:stampRect];
+    NSBezierPath *outerPath = [_controlColorSwatchPath copy]; // Need to make a copy here because we will reverse the path to enable the cut-out
+    stampPath = [stampPath bezierPathByReversingPath];
+    [outerPath appendBezierPath:stampPath];
+    [gradientFill drawInBezierPath:outerPath angle:90.0];
+}
+
+#pragma Mouse over indicator
+
+- (NSRect) _mouseOverIndicatorFrame {
+    
+    NSRect colorRect = [self _controlColorSwatchFrame];
+    NSRect basicRect = NSMakeRect(NSMaxX(colorRect) - MOUSE_OVER_INDICATOR_SIDE_LENGTH,
+                                  0.5 * (INTRINSIC_HEIGHT - MOUSE_OVER_INDICATOR_SIDE_LENGTH),MOUSE_OVER_INDICATOR_SIDE_LENGTH,
+                                  MOUSE_OVER_INDICATOR_SIDE_LENGTH);
+    return NSOffsetRect(basicRect, -MOUSE_OVER_INDICATOR_PADDING, 0.0);
+}
+
+- (void) _drawMouseOverIndicator {
+    
+    NSBezierPath* ovalPath = [NSBezierPath bezierPathWithOvalInRect:[self _mouseOverIndicatorFrame]];
+    NSColor* color = [NSColor colorWithCalibratedWhite:0.4 alpha:0.4];
+    [color setFill];
+    [ovalPath fill];
+}
+
+- (void) _drawMouseOverIndicatorChevron {
+    
+    
+    /* This is the white "tick" or chevron that appears in the circle to
+     indicated that the popover can be launched by clicking the color segment.*/
+    NSRect frame = [self _mouseOverIndicatorFrame];
+    NSPoint mid = NSMakePoint(NSMidX(frame), NSMidY(frame));
+    NSPoint secondPoint = NSMakePoint(mid.x, mid.y - MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH * 0.5);
+    NSPoint firstPoint = NSMakePoint(secondPoint.x - MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH, secondPoint.y + MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH);
+    NSPoint thridPoint = NSMakePoint(secondPoint.x + MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH, secondPoint.y + MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH);
+    
+    NSBezierPath *tickPath = [NSBezierPath bezierPath];
+    [tickPath moveToPoint:firstPoint];
+    [tickPath lineToPoint:secondPoint];
+    [tickPath lineToPoint:thridPoint];
+    [tickPath setLineWidth:1.0];
+    [[NSColor whiteColor] setStroke];
+    [tickPath stroke];
+    
+}
+
+
+#pragma mark - Public drawing methods
+
++ (void) drawColorSwatchWithFrame:(NSRect)frame color:(NSColor*) color shouldDrawBorder:(BOOL)shouldDrawBorder {
+    
+    [NSGraphicsContext saveGraphicsState];
+    
+
+    
+    // Fill with black, this will end up looking like the upper triangle.
+    NSBezierPath *path = [NSBezierPath bezierPathWithRect:frame];
+    [[NSColor blackColor] setFill];
+    [path fill];
+    
+    // White lower triangle.
+    NSPoint p1 = NSMakePoint(NSMinX(frame), NSMinY(frame));
+    NSPoint p2 = NSMakePoint(NSMaxX(frame), NSMaxY(frame));
+    NSPoint p3 = NSMakePoint(NSMaxX(frame), NSMinY(frame));
+    
+    NSBezierPath *lowerTrianglePath = [NSBezierPath bezierPath];
+    [lowerTrianglePath moveToPoint:p1];
+    [lowerTrianglePath lineToPoint:p2];
+    [lowerTrianglePath lineToPoint:p3];
+    [lowerTrianglePath closePath];
+    [[NSColor whiteColor] setFill];
+    [lowerTrianglePath fill];
+    
+    // Now over draw the actual color of the cell above the black and white triangles,
+    // if the colour is transparent then we see the black/white triangle background,
+    // this is the standard approach with OSX colour wells.
+    [color setFill];
+    [path fill];
+    
+    // Draw border
+    if (shouldDrawBorder) {
+        [[[NSColor darkGrayColor] colorWithAlphaComponent:0.5] setStroke];
+        [path stroke];
+    }
+    
+    [NSGraphicsContext restoreGraphicsState];
 }
 
 
@@ -378,7 +434,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     
     /* Set visual highlight when the mouse enters the view */
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    if (NSPointInRect(locationInView, [self _colorAreaRect])) {
+    if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
         _shouldDrawMouseOverIndicator = YES;
     } else {
         _shouldDrawMouseOverIndicator = NO;
@@ -403,7 +459,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     
     // Check for mouse in color region
-    if (NSPointInRect(locationInView, [self _colorAreaRect])) {
+    if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
         
         if (_shouldDrawMouseOverIndicator != YES) {
             needToRedraw = YES;
@@ -419,7 +475,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     }
     
     // Check for mouse in button region
-    if (NSPointInRect(locationInView, [self _buttonAreaRect]) ) {
+    if (NSPointInRect(locationInView, [self _controlButtonFrame]) ) {
         // Check if we did change
         if (YES != _shouldDrawDarkerButtonRegion) {
             needToRedraw = YES;
@@ -454,9 +510,9 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     /* Mouse down either launches a popover or the color
      panel depending on the location in the view. */
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    if (NSPointInRect(locationInView, [self _colorAreaRect])) {
+    if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
         [self _handleMouseDownInColorRect];
-    } else if (NSPointInRect(locationInView, [self _buttonAreaRect])){
+    } else if (NSPointInRect(locationInView, [self _controlButtonFrame])){
         [self _handleMouseDownInButtonRect];
     }
 }
@@ -482,7 +538,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [_popover setContentViewController:_colorGridViewController];
     [_popover setAnimates:NO];
     [_popover setBehavior:NSPopoverBehaviorTransient];
-    [_popover showRelativeToRect:[self _colorAreaRect] ofView:self preferredEdge:NSMinYEdge];
+    [_popover showRelativeToRect:[self _controlColorSwatchFrame] ofView:self preferredEdge:NSMinYEdge];
 }
 
 - (void) _handleMouseDownInButtonRect {
@@ -514,7 +570,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 
 }
 
-#pragma mark - Dealing with the color panel
+#pragma mark - Dealing with the NSColorPanel
 
 - (void) handleWindowWillCloseNotification:(NSNotification*)notification {
     

@@ -25,4 +25,12 @@
 
 @property IBOutlet id <DFColorWellDelegate> delegate;
 
+#pragma mark - Drawing convenience methods
+
+/* This class method is used by DFColorWell to draw the color swatch
+ in the popover view's.
+ 
+ Use this method with any custom view to provide a consistent UI appearance. */
++ (void) drawColorSwatchWithFrame:(NSRect)frame color:(NSColor*) color shouldDrawBorder:(BOOL)shouldDrawBorder;
+
 @end
