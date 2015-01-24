@@ -22,13 +22,13 @@ Usage
 1. Drag out an NSView into a XIB
 2. Change the class to `DFColorWell`
 
-    <p><a href="url"><img src="http://i.imgur.com/YdQ6qbb.png" align="left" width="200px" ></a></p>
+<p><a href="url"><img src="http://i.imgur.com/YdQ6qbb.png" align="left" width="200px" ></a></p>
    
 3. Add placeholder intrinsic size to 67 by 23. 
    
    **NB** DFColorWell sets the `intrinsicContentSize` because the control will always have a fixed size, so size constraints should not be used.
 
-    <p><a href="url"><img src="http://i.imgur.com/5X0KuA5.png" align="left" width="200px" ></a></p>
+<p><a href="url"><img src="http://i.imgur.com/5X0KuA5.png" align="left" width="200px" ></a></p>
 
 4. Implement all the **required** delegate methods which fills the pop over with different colours:
 
