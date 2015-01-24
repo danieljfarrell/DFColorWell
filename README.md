@@ -46,4 +46,4 @@ Contact
 
 Licensing
 ---------
-DFColorWell is licensed under the [BSD license](http://www.opensource.org/licenses/bsd-license.php).
+DFColorWell is licensed under the [BSD license](http://opensource.org/licenses/BSD-3-Clause).
