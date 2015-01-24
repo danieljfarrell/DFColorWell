@@ -83,6 +83,11 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
                                                          owner:self
                                                       userInfo:nil];
     
+    [self addTrackingArea:_colorSwatchTrackingArea];
+    [self addTrackingArea:_buttonTrackingArea];
+    
+    [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorCellAreaUserInfo];
+    [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonAreaUserInfo];
     
     [self addTrackingArea:_colorSwatchTrackingArea];
     [self addTrackingArea:_buttonTrackingArea];
@@ -514,6 +519,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     
 }
 
+
 #pragma mark - Mouse Clicking
 
 - (void) _handleMouseUpInColorRect {
@@ -646,6 +652,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
             break;
     }
 }
+
 
 #pragma mark - Dragging Destination
 
