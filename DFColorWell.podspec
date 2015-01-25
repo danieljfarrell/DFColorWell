@@ -103,9 +103,9 @@ Pod::Spec.new do |s|
   #
 
   # s.resource  = 'Images.xcassets/DFColorWheel.imageset/DFColorWheel.png'
-  # s.resources = "Resources/*.png"
+  s.resources = 'DFColorWell/DFColorGridViewController.xib'
   s.resource_bundles = {
-    'DFColorWell' => ['Resources/Images/*', 'DFColorWell/DFColorGridViewController.xib']
+    'DFColorWell' => ['Resources/Images/*']
   }
   
   # s.resource = "DFColorWell/Images.xcassets"
