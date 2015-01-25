@@ -88,7 +88,7 @@ Pod::Spec.new do |s|
   #
 
   s.source_files  = 'DFColorWell/DFColorWell.{h,m}',
-                    'DFColorWell/DFColorGridViewController.{h,m,xib}',
+                    'DFColorWell/DFColorGridViewController.{h,m}',
                     'DFColorWell/DFcolorGridView.{h,m}'
 
   #s.public_header_files = 'Classes/**/*.h'
@@ -105,7 +105,7 @@ Pod::Spec.new do |s|
   # s.resource  = 'Images.xcassets/DFColorWheel.imageset/DFColorWheel.png'
   # s.resources = "Resources/*.png"
   s.resource_bundles = {
-    'DFColorWell' => ['Resources/Images/*']
+    'DFColorWell' => ['Resources/Images/*', 'DFColorWell/DFColorGridViewController.xib']
   }
   
   # s.resource = "DFColorWell/Images.xcassets"
