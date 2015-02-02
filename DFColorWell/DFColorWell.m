@@ -7,7 +7,6 @@
 //
 
 #import "DFColorWell.h"
-#import "DFColorGridViewController.h"
 #import "DFColorGridView.h"
 
 #define INTRINSIC_WIDTH 65.0
@@ -50,7 +49,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 
 // Popover and content view controller
 
-@property DFColorGridViewController *colorGridViewController;
+@property DFColorGridView *colorGridView;
 
 @property NSPopover *popover;
 
@@ -525,20 +524,20 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 - (void) _handleMouseUpInColorRect {
     
 
-    if (_colorGridViewController == nil) {
-        _colorGridViewController = [[DFColorGridViewController alloc] initWithNibName:@"DFColorGridViewController" bundle:nil];
-        _colorGridViewController.colorWell = self;
-        DFColorGridView *view = (DFColorGridView*)_colorGridViewController.view;
-        view.controller = _colorGridViewController;
+    if (_colorGridView == nil) {
+        _colorGridView = [[DFColorGridView alloc] initWithFrame:NSZeroRect];
+        _colorGridView.translatesAutoresizingMaskIntoConstraints = YES;
+        _colorGridView.colorWell = self;
     }
     
     // The color grid view knows it own size, set this here
     _popover = [[NSPopover alloc] init];
-    DFColorGridView *view = (DFColorGridView*)_colorGridViewController.view;
-    [_popover setContentSize:[view intrinsicContentSize]];
+    [_popover setContentSize:[_colorGridView intrinsicContentSize]];
     
     // Set up popover and show
-    [_popover setContentViewController:_colorGridViewController];
+    NSViewController *contentViewController = [[NSViewController alloc] init];
+    contentViewController.view = _colorGridView;
+    [_popover setContentViewController:contentViewController];
     [_popover setAnimates:NO];
     [_popover setBehavior:NSPopoverBehaviorTransient];
     [_popover showRelativeToRect:[self _controlColorSwatchFrame] ofView:self preferredEdge:NSMinYEdge];
@@ -598,7 +597,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 
 - (void) setColor:(NSColor *)color {
     
-    if (_color == nil) {
+    if (color == nil) {
         return;
     }
     

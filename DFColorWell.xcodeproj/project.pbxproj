@@ -12,8 +12,6 @@
 		65103E3A1A6BD1DF00B29F79 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65103E391A6BD1DF00B29F79 /* Images.xcassets */; };
 		65103E3D1A6BD1DF00B29F79 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65103E3B1A6BD1DF00B29F79 /* MainMenu.xib */; };
 		65103E541A6BD23600B29F79 /* DFColorWell.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E531A6BD23600B29F79 /* DFColorWell.m */; };
-		65103E581A6BE65D00B29F79 /* DFColorGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E561A6BE65D00B29F79 /* DFColorGridViewController.m */; };
-		65103E591A6BE65D00B29F79 /* DFColorGridViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65103E571A6BE65D00B29F79 /* DFColorGridViewController.xib */; };
 		65103E621A6BEC0D00B29F79 /* DFColorGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = 65103E611A6BEC0D00B29F79 /* DFColorGridView.m */; };
 		65103E651A6C049A00B29F79 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65103E631A6C049A00B29F79 /* Quartz.framework */; };
 		65103E661A6C049A00B29F79 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65103E641A6C049A00B29F79 /* QuartzCore.framework */; };
@@ -29,9 +27,6 @@
 		65103E3C1A6BD1DF00B29F79 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		65103E521A6BD23600B29F79 /* DFColorWell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFColorWell.h; sourceTree = "<group>"; };
 		65103E531A6BD23600B29F79 /* DFColorWell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFColorWell.m; sourceTree = "<group>"; };
-		65103E551A6BE65D00B29F79 /* DFColorGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFColorGridViewController.h; sourceTree = "<group>"; };
-		65103E561A6BE65D00B29F79 /* DFColorGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFColorGridViewController.m; sourceTree = "<group>"; };
-		65103E571A6BE65D00B29F79 /* DFColorGridViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DFColorGridViewController.xib; sourceTree = "<group>"; };
 		65103E601A6BEC0D00B29F79 /* DFColorGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFColorGridView.h; sourceTree = "<group>"; };
 		65103E611A6BEC0D00B29F79 /* DFColorGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DFColorGridView.m; sourceTree = "<group>"; };
 		65103E631A6C049A00B29F79 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
@@ -96,9 +91,6 @@
 		65103E6A1A6C6C9C00B29F79 /* Support Classes */ = {
 			isa = PBXGroup;
 			children = (
-				65103E551A6BE65D00B29F79 /* DFColorGridViewController.h */,
-				65103E561A6BE65D00B29F79 /* DFColorGridViewController.m */,
-				65103E571A6BE65D00B29F79 /* DFColorGridViewController.xib */,
 				65103E601A6BEC0D00B29F79 /* DFColorGridView.h */,
 				65103E611A6BEC0D00B29F79 /* DFColorGridView.m */,
 			);
@@ -162,7 +154,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				65103E591A6BE65D00B29F79 /* DFColorGridViewController.xib in Resources */,
 				65103E3A1A6BD1DF00B29F79 /* Images.xcassets in Resources */,
 				65103E3D1A6BD1DF00B29F79 /* MainMenu.xib in Resources */,
 			);
@@ -175,7 +166,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				65103E581A6BE65D00B29F79 /* DFColorGridViewController.m in Sources */,
 				65103E381A6BD1DF00B29F79 /* main.m in Sources */,
 				65103E541A6BD23600B29F79 /* DFColorWell.m in Sources */,
 				65103E621A6BEC0D00B29F79 /* DFColorGridView.m in Sources */,

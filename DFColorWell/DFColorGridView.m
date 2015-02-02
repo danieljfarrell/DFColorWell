@@ -7,7 +7,6 @@
 //
 
 #import "DFColorGridView.h"
-#import "DFColorGridViewController.h"
 #import "DFColorWell.h"
 
 #import <QuartzCore/QuartzCore.h>
@@ -56,11 +55,13 @@
     
     //[[NSColor brownColor] setFill];
     //[[NSBezierPath bezierPathWithRect:_bounds] fill];
+    NSUInteger columns = [_colorWell.delegate numberOfColumnsInColorWell:_colorWell];
+    NSUInteger rows = [_colorWell.delegate numberOfRowsInColorWell:_colorWell];
     
-    for (NSUInteger i=0; i < [_controller numberOfColumns]; i++) {
-        for (NSUInteger j=0; j < [_controller numberOfRows]; j++) {
+    for (NSUInteger i=0; i < columns; i++) {
+        for (NSUInteger j=0; j < rows; j++) {
 
-            NSColor *fillColor = [_controller colorAtColumn:i row:j];
+            NSColor *fillColor = [_colorWell.delegate colorWell:_colorWell colorAtColumn:i row:j];
             if (fillColor) {
                 if (fillColor != (id)[NSNull null]) {
                     NSRect frame = [self _frameForColorAreaAtColumn:i row:j];
@@ -104,7 +105,7 @@
 
 - (void) _drawSelectorRectAtColumn:(NSUInteger)i row:(NSUInteger)j {
     
-    NSColor *cellColor = [_controller colorAtColumn:i row:j];
+    NSColor *cellColor = [_colorWell.delegate colorWell:_colorWell colorAtColumn:i row:j];
     if (cellColor) {
         if (cellColor != (id)[NSNull null]) {
             
@@ -132,15 +133,15 @@
 - (NSSize) intrinsicContentSize {
     
     NSUInteger maxColumnIndex = 0;
-    if ([_controller numberOfColumns] > 0 ) {
-        maxColumnIndex = [_controller numberOfColumns] - 1;
+    if ([_colorWell.delegate numberOfColumnsInColorWell:_colorWell] > 0 ) {
+        maxColumnIndex = [_colorWell.delegate numberOfColumnsInColorWell:_colorWell] - 1;
     } else {
         maxColumnIndex  = 0;
     }
     
     NSUInteger maxRowIndex = 0;
-    if ([_controller numberOfRows] > 0 ) {
-        maxRowIndex = [_controller numberOfRows] - 1;
+    if ([_colorWell.delegate numberOfRowsInColorWell:_colorWell] > 0 ) {
+        maxRowIndex = [_colorWell.delegate numberOfRowsInColorWell:_colorWell] - 1;
     } else {
         maxRowIndex  = 0;
     }
@@ -155,10 +156,12 @@
 
 - (void) mouseDown:(NSEvent *)theEvent {
     
+    NSUInteger columns = [_colorWell.delegate numberOfColumnsInColorWell:_colorWell];
+    NSUInteger rows = [_colorWell.delegate numberOfRowsInColorWell:_colorWell];
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     // Get the col and row index of the mouse down
-    for (NSUInteger i=0; i < [_controller numberOfColumns]; i++) {
-        for (NSUInteger j=0; j < [_controller numberOfRows]; j++) {
+    for (NSUInteger i=0; i < columns; i++) {
+        for (NSUInteger j=0; j < rows; j++) {
             NSRect frame = [self _frameForColorAreaAtColumn:i row:j];
             if (NSPointInRect(locationInView, frame)) {
                 _mouseDownInColumnIndex = i;
@@ -182,11 +185,14 @@
     NSUInteger mouseUpInColumnIndex = NSNotFound;
     NSUInteger mouseUpInRowIndex = NSNotFound;
     
+    NSUInteger columns = [_colorWell.delegate numberOfColumnsInColorWell:_colorWell];
+    NSUInteger rows = [_colorWell.delegate numberOfRowsInColorWell:_colorWell];
+    
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     NSColor *selectedColor = nil;
     // Get the col and row index of the mouse down
-    for (NSUInteger i=0; i < [_controller numberOfColumns]; i++) {
-        for (NSUInteger j=0; j < [_controller numberOfRows]; j++) {
+    for (NSUInteger i=0; i < columns; i++) {
+        for (NSUInteger j=0; j < rows; j++) {
             NSRect frame = [self _frameForColorAreaAtColumn:i row:j];
             if (NSPointInRect(locationInView, frame)) {
                 //NSLog(@"**FOUND** column:%lu row:%lu", (unsigned long)i, (unsigned long)j);
@@ -200,10 +206,10 @@
     
     
     if ((_mouseDownInColumnIndex == mouseUpInColumnIndex) && (_mouseDownInRowIndex == mouseUpInRowIndex)) {
-        selectedColor = [_controller colorAtColumn:_mouseDownInColumnIndex row:_mouseDownInRowIndex];
+        selectedColor = [_colorWell.delegate colorWell:_colorWell colorAtColumn:_mouseDownInColumnIndex row:_mouseDownInRowIndex];
         if (selectedColor) {
             if (selectedColor != (id)[NSNull null]) {
-                _controller.colorWell.color = selectedColor;
+                _colorWell.color = selectedColor;
             }
         }
     }

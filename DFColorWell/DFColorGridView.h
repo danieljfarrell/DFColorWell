@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-@class DFColorGridViewController;
+@class DFColorWell;
 
 IB_DESIGNABLE;
 @interface DFColorGridView : NSView
@@ -24,6 +24,6 @@ IB_DESIGNABLE;
 
 @property CGFloat cellHeight;
 
-@property DFColorGridViewController *controller;
+@property (weak) DFColorWell *colorWell;
 
 @end
