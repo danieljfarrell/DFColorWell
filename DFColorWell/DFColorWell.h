@@ -21,7 +21,7 @@
 
 @interface DFColorWell : NSView <NSDraggingSource, NSDraggingDestination>
 
-/** The color that is current displayed in the control.
+/** The color that is currently displayed in the control.
  
  This cannot be nil.
  

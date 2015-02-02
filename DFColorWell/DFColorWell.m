@@ -607,7 +607,7 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [self setNeedsDisplay:YES];
     [self didChangeValueForKey:@"color"];
     
-    /* Hook into the popover here and if show, close it.*/
+    /* Hook into the popover here and if shown, close it.*/
     if (_popover) {
         if ([_popover isShown]) {
             [_popover close];
