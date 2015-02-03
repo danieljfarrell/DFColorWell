@@ -17,6 +17,7 @@
 @property NSUInteger mouseDownInRowIndex;
 @property BOOL mouseIsDown;
 @property BOOL mouseDraggedOutsideMouseDownCell;
+@property NSMutableDictionary *colors;
 @end
 
 @implementation DFColorGridView
@@ -25,8 +26,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
-        
         
         _mouseDownInColumnIndex = NSNotFound;
         _mouseDownInRowIndex = NSNotFound;
@@ -51,10 +50,6 @@
     [super drawRect:dirtyRect];
     // Drawing code here.
     
-    //NSLog(@"%s", __PRETTY_FUNCTION__);
-    
-    //[[NSColor brownColor] setFill];
-    //[[NSBezierPath bezierPathWithRect:_bounds] fill];
     NSUInteger columns = [_colorWell.delegate numberOfColumnsInColorWell:_colorWell];
     NSUInteger rows = [_colorWell.delegate numberOfRowsInColorWell:_colorWell];
     

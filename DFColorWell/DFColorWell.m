@@ -9,6 +9,82 @@
 #import "DFColorWell.h"
 #import "DFColorGridView.h"
 
+#pragma mark - Build-in color well delegate
+
+@interface DFColorGridViewDefaultDelegate : NSObject <DFColorWellDelegate>
+@property NSMutableDictionary *colorMatrix;
+@end
+
+@implementation DFColorGridViewDefaultDelegate
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self _generateColors];
+    }
+    return self;
+}
+
+- (void) _generateColors {
+    
+    _colorMatrix = [NSMutableDictionary new];
+    _colorMatrix[@"(0,0)"] = [NSColor colorWithCalibratedRed:0.807 green:0.845 blue:0.886 alpha:1.000];
+    _colorMatrix[@"(0,1)"] = [NSColor colorWithCalibratedRed:0.587 green:0.673 blue:0.767 alpha:1.000];
+    _colorMatrix[@"(0,2)"] = [NSColor colorWithCalibratedRed:0.236 green:0.365 blue:0.518 alpha:1.000];
+    _colorMatrix[@"(0,3)"] = [NSColor colorWithCalibratedRed:0.176 green:0.262 blue:0.364 alpha:1.000];
+    _colorMatrix[@"(0,4)"] = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+    
+    _colorMatrix[@"(1,0)"] = [NSColor colorWithCalibratedRed:0.864 green:0.889 blue:0.849 alpha:1.000];
+    _colorMatrix[@"(1,1)"] = [NSColor colorWithCalibratedRed:0.527 green:0.589 blue:0.480 alpha:1.000];
+    _colorMatrix[@"(1,2)"] = [NSColor colorWithCalibratedRed:0.237 green:0.341 blue:0.182 alpha:1.000];
+    _colorMatrix[@"(1,3)"] = [NSColor colorWithCalibratedRed:0.150 green:0.229 blue:0.108 alpha:1.000];
+    _colorMatrix[@"(1,4)"] = [NSColor colorWithCalibratedRed:0.6 green:0.6 blue:0.6 alpha:1.0];
+    
+    _colorMatrix[@"(2,0)"] = [NSColor colorWithCalibratedRed:0.987 green:0.902 blue:0.731 alpha:1.000];
+    _colorMatrix[@"(2,1)"] = [NSColor colorWithCalibratedRed:0.854 green:0.705 blue:0.422 alpha:1.000];
+    _colorMatrix[@"(2,2)"] = [NSColor colorWithCalibratedRed:0.570 green:0.397 blue:0.182 alpha:1.000];
+    _colorMatrix[@"(2,3)"] = [NSColor colorWithCalibratedRed:0.287 green:0.201 blue:0.126 alpha:1.000];
+    _colorMatrix[@"(2,4)"] = [NSColor colorWithCalibratedRed:0.4 green:0.4 blue:0.4 alpha:1.0];
+    
+    _colorMatrix[@"(3,0)"] = [NSColor colorWithCalibratedRed:0.915 green:0.629 blue:0.521 alpha:1.000];
+    _colorMatrix[@"(3,1)"] = [NSColor colorWithCalibratedRed:0.889 green:0.465 blue:0.306 alpha:1.000];
+    _colorMatrix[@"(3,2)"] = [NSColor colorWithCalibratedRed:0.820 green:0.263 blue:0.105 alpha:1.000];
+    _colorMatrix[@"(3,3)"] = [NSColor colorWithCalibratedRed:0.633 green:0.218 blue:0.014 alpha:1.000];
+    _colorMatrix[@"(3,4)"] = [NSColor colorWithCalibratedRed:0.2 green:0.2 blue:0.2 alpha:1.0];
+    
+    _colorMatrix[@"(4,0)"] = [NSColor colorWithCalibratedRed:0.875 green:0.492 blue:0.473 alpha:1.000];
+    _colorMatrix[@"(4,1)"] = [NSColor colorWithCalibratedRed:0.662 green:0.166 blue:0.194 alpha:1.000];
+    _colorMatrix[@"(4,2)"] = [NSColor colorWithCalibratedRed:0.493 green:0.074 blue:0.103 alpha:1.000];
+    _colorMatrix[@"(4,3)"] = [NSColor colorWithCalibratedRed:0.349 green:0.000 blue:0.013 alpha:1.000];
+    _colorMatrix[@"(4,4)"] = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+    
+    _colorMatrix[@"(5,0)"] = [NSColor colorWithCalibratedRed:0.629 green:0.602 blue:0.701 alpha:1.000];
+    _colorMatrix[@"(5,1)"] = [NSColor colorWithCalibratedRed:0.426 green:0.388 blue:0.527 alpha:1.000];
+    _colorMatrix[@"(5,2)"] = [NSColor colorWithCalibratedRed:0.303 green:0.269 blue:0.393 alpha:1.000];
+    _colorMatrix[@"(5,3)"] = [NSColor colorWithCalibratedRed:0.199 green:0.178 blue:0.253 alpha:1.000];
+    _colorMatrix[@"(5,4)"] = [NSNull null];
+    
+}
+
+- (NSUInteger) numberOfColumnsInColorWell:(DFColorWell *)colorWell {
+    return 6;
+}
+
+- (NSUInteger) numberOfRowsInColorWell:(DFColorWell *)colorWell {
+    return 5;
+}
+
+- (NSColor*) colorWell:(DFColorWell *)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row {
+    NSString *key = [NSString stringWithFormat:@"(%lu,%lu)", (unsigned long)column,(unsigned long)row];
+    NSColor *color = _colorMatrix[key];
+    return color;
+}
+
+@end
+
+#pragma mark - Control geometry 
+
 #define INTRINSIC_WIDTH 65.0
 #define INTRINSIC_HEIGHT 21.0
 #define BUTTON_SIDE_LENGTH 21.0
@@ -24,8 +100,10 @@
 #define DRAG_IMAGE_X_OFFSET 5.0
 #define DRAG_IMAGE_Y_OFFSET 0.0
 
-static void * kDFColorCellAreaUserInfo = &kDFColorCellAreaUserInfo;
-static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
+#pragma mark - DFColorWell 
+
+static void * kDFColorSwatchTooltipArea = &kDFColorSwatchTooltipArea;
+static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @interface DFColorWell ()
 
@@ -48,7 +126,6 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
 @property NSBezierPath *controlOuterBorderPath;
 
 // Popover and content view controller
-
 @property DFColorGridView *colorGridView;
 
 @property NSPopover *popover;
@@ -85,19 +162,21 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [self addTrackingArea:_colorSwatchTrackingArea];
     [self addTrackingArea:_buttonTrackingArea];
     
-    [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorCellAreaUserInfo];
-    [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonAreaUserInfo];
+    [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorSwatchTooltipArea];
+    [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonTooltipArea];
     
     [self addTrackingArea:_colorSwatchTrackingArea];
     [self addTrackingArea:_buttonTrackingArea];
     
-    [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorCellAreaUserInfo];
-    [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonAreaUserInfo];
+    [self addToolTipRect:[self _controlColorSwatchFrame] owner:self userData:kDFColorSwatchTooltipArea];
+    [self addToolTipRect:[self _controlButtonFrame] owner:self userData:kDFButtonTooltipArea];
     
     // Default, non-nil, color
     if (self.color == nil) {
-        self.color = [NSColor whiteColor];
+        self.color = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
     }
+    
+    self.delegate = [[DFColorGridViewDefaultDelegate alloc] init];
 }
 
 #pragma mark - Tooltips
@@ -106,11 +185,11 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     
     if (view == self) {
         
-        if (data == kDFColorCellAreaUserInfo) {
-            return @"Click to choose a colour";
+        if (data == kDFColorSwatchTooltipArea) {
+            return @"Click to choose a colour.";
         }
         
-        if (data == kDFButtonAreaUserInfo) {
+        if (data == kDFButtonTooltipArea) {
             return @"Click to show more colours or show your own.";
         }
     }
@@ -606,7 +685,14 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     [self setNeedsDisplay:YES];
     [self didChangeValueForKey:@"color"];
     
-    /* Hook into the popover here and if shown, close it.*/
+    // Set the control's target/action
+    if (self.target) {
+        if ([self.target respondsToSelector:self.action]) {
+            [self.target performSelector:self.action withObject:self];
+        }
+    }
+    
+    // Hook into the popover here and if shown, close it
     if (_popover) {
         if ([_popover isShown]) {
             [_popover close];
@@ -692,8 +778,6 @@ static void * kDFButtonAreaUserInfo = &kDFButtonAreaUserInfo;
     }
     return NO;
 }
-
-
 
 
 @end

@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 @class DFColorWell;
 
-IB_DESIGNABLE;
 @interface DFColorGridView : NSView
 
 @property CGFloat borderPadding;

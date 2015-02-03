@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
@@ -13,6 +13,8 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
+                <outlet property="colorInformationLabel" destination="Ksl-dY-8Fb" id="Sn4-QQ-KfC"/>
+                <outlet property="colorWell" destination="dDO-MW-Y0T" id="Q9w-7r-bWg"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -669,29 +671,60 @@
         <window title="DFColorWell" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="336" height="110"/>
+            <rect key="contentRect" x="335" y="390" width="336" height="127"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="336" height="110"/>
+                <rect key="frame" x="0.0" y="0.0" width="336" height="127"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hyf-yZ-QWY">
-                        <rect key="frame" x="18" y="73" width="227" height="17"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="A modern iWork style color picker" id="PfJ-SG-Y1A">
-                            <font key="font" metaFont="systemBold"/>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JnQ-1o-1V3">
+                        <rect key="frame" x="18" y="51" width="115" height="16"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Colour information:" id="2cx-yl-Wf2">
+                            <font key="font" metaFont="controlContent"/>
+                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ksl-dY-8Fb">
+                        <rect key="frame" x="134" y="51" width="171" height="16"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;updated by action method&gt;" id="EcZ-sX-ep6">
+                            <font key="font" metaFont="controlContent"/>
+                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IIL-Dx-cF3">
+                        <rect key="frame" x="18" y="75" width="300" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="296" id="alb-eK-aHW"/>
+                        </constraints>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="An implementation of the colour well seen in Pages 5, Numbers 3 and Keynote 6." id="4dH-Fz-al7">
+                            <font key="font" metaFont="controlContent"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <customView fixedFrame="YES" placeholderIntrinsicWidth="67" placeholderIntrinsicHeight="23" translatesAutoresizingMaskIntoConstraints="NO" id="I7c-W1-jZU" customClass="DFColorWell">
-                        <rect key="frame" x="20" y="42" width="67" height="23"/>
+                    <customView placeholderIntrinsicWidth="67" placeholderIntrinsicHeight="23" translatesAutoresizingMaskIntoConstraints="NO" id="dDO-MW-Y0T" customClass="DFColorWell">
+                        <rect key="frame" x="20" y="20" width="67" height="23"/>
                         <connections>
-                            <outlet property="delegate" destination="Voe-Tx-rLC" id="JO7-gD-wtA"/>
+                            <action selector="colorWellAction:" target="Voe-Tx-rLC" id="OVy-CY-cxz"/>
                         </connections>
                     </customView>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="dDO-MW-Y0T" firstAttribute="top" secondItem="JnQ-1o-1V3" secondAttribute="bottom" constant="8" id="LtK-gm-Gan"/>
+                    <constraint firstItem="JnQ-1o-1V3" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="OsW-lb-hhn"/>
+                    <constraint firstItem="dDO-MW-Y0T" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="SLK-5j-0RT"/>
+                    <constraint firstItem="Ksl-dY-8Fb" firstAttribute="baseline" secondItem="JnQ-1o-1V3" secondAttribute="baseline" id="VlD-et-vXA"/>
+                    <constraint firstItem="Ksl-dY-8Fb" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="136" id="XE6-0Y-Pnc"/>
+                    <constraint firstAttribute="bottom" secondItem="dDO-MW-Y0T" secondAttribute="bottom" constant="20" id="XUj-f2-BUm"/>
+                    <constraint firstAttribute="trailing" secondItem="IIL-Dx-cF3" secondAttribute="trailing" constant="20" id="a7i-bu-jgA"/>
+                    <constraint firstItem="IIL-Dx-cF3" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="dpn-bm-7vf"/>
+                    <constraint firstItem="JnQ-1o-1V3" firstAttribute="top" secondItem="IIL-Dx-cF3" secondAttribute="bottom" constant="8" id="hsS-qI-DX1"/>
+                    <constraint firstItem="IIL-Dx-cF3" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" id="yRD-ho-3V0"/>
+                </constraints>
             </view>
-            <point key="canvasLocation" x="5" y="-128"/>
+            <point key="canvasLocation" x="101" y="23.5"/>
         </window>
     </objects>
 </document>
