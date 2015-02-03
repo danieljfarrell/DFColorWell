@@ -33,7 +33,7 @@
     _colorMatrix[@"(0,1)"] = [NSColor colorWithCalibratedRed:0.587 green:0.673 blue:0.767 alpha:1.000];
     _colorMatrix[@"(0,2)"] = [NSColor colorWithCalibratedRed:0.236 green:0.365 blue:0.518 alpha:1.000];
     _colorMatrix[@"(0,3)"] = [NSColor colorWithCalibratedRed:0.176 green:0.262 blue:0.364 alpha:1.000];
-    _colorMatrix[@"(0,4)"] = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+    _colorMatrix[@"(0,4)"] = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
     
     _colorMatrix[@"(1,0)"] = [NSColor colorWithCalibratedRed:0.864 green:0.889 blue:0.849 alpha:1.000];
     _colorMatrix[@"(1,1)"] = [NSColor colorWithCalibratedRed:0.527 green:0.589 blue:0.480 alpha:1.000];
