@@ -686,10 +686,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     [self didChangeValueForKey:@"color"];
     
     // Set the control's target/action
-    if (self.target) {
-        if ([self.target respondsToSelector:self.action]) {
-            [self.target performSelector:self.action withObject:self];
-        }
+    if ([self.target respondsToSelector:self.action]) {
+        [NSApp sendAction:self.action to:self.target from:self];
     }
     
     // Hook into the popover here and if shown, close it
