@@ -601,7 +601,6 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 #pragma mark - Mouse Clicking
 
 - (void) _handleMouseUpInColorRect {
-    
 
     if (_colorGridView == nil) {
         _colorGridView = [[DFColorGridView alloc] initWithFrame:NSZeroRect];
@@ -609,6 +608,15 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         _colorGridView.colorWell = self;
     }
     
+    
+    // Check that popover is shown before creating a new popover
+    // This fixed, https://github.com/danieljfarrell/DFColorWell/issues/3
+    if([_popover isShown]){
+        [_popover close];
+        return;
+    }
+    
+
     // The color grid view knows it own size, set this here
     _popover = [[NSPopover alloc] init];
     [_popover setContentSize:[_colorGridView intrinsicContentSize]];
@@ -618,7 +626,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     contentViewController.view = _colorGridView;
     [_popover setContentViewController:contentViewController];
     [_popover setAnimates:NO];
-    [_popover setBehavior:NSPopoverBehaviorTransient];
+    [_popover setBehavior:NSPopoverBehaviorSemitransient];
     [_popover showRelativeToRect:[self _controlColorSwatchFrame] ofView:self preferredEdge:NSMinYEdge];
 }
 
@@ -675,6 +683,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 @synthesize color = _color;
 
 - (void) setColor:(NSColor *)color {
+    
     
     if (color == nil) {
         return;
