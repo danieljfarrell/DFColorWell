@@ -650,6 +650,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         panel.showsAlpha = YES;
         panel.target = self;
         panel.action = @selector(handleColorPanelColorSelectionAction:);
+        panel.color = self.color;
         [panel orderFront:nil];
         
         /* Capture the close of the color panel. */
