@@ -252,6 +252,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     // Since we're stroking the outline later on we also have to inset the rectangle here to get
     // a pixel-perfect shape without any artifacts that might peek out from below the stroked border.
     NSRect rect = [self _insetRectForStroking:[self _controlColorSwatchFrame]];
+    // Don't inset on the right border.
+    rect.size.width += [self _strokeWidth];
+    
     CGFloat r = BUTTON_RADIUS;
     
     NSPoint pt1 = NSMakePoint(NSMinX(rect) + r, NSMaxY(rect));
