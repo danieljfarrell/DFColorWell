@@ -130,6 +130,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property NSPopover *popover;
 
+@property DFColorGridViewDefaultDelegate *defaultDelegate;
+
 @end
 
 @implementation DFColorWell
@@ -175,8 +177,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     if (self.color == nil) {
         self.color = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
     }
-    
-    self.delegate = [[DFColorGridViewDefaultDelegate alloc] init];
+	
+    self.defaultDelegate = [[DFColorGridViewDefaultDelegate alloc] init];
+	self.delegate = self.defaultDelegate;
 }
 
 #pragma mark - Tooltips
