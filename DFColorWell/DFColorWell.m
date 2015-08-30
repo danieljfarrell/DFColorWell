@@ -179,6 +179,20 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     self.delegate = [[DFColorGridViewDefaultDelegate alloc] init];
 }
 
+- (void)dealloc {
+    
+    NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+    
+    if (panel) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
+        
+        panel.target = nil;
+        panel.action = NULL;
+        
+        [panel close];
+    }
+}
+
 #pragma mark - Tooltips
 
 - (NSString*) view:(NSView *)view stringForToolTip:(NSToolTipTag)tag point:(NSPoint)point userData:(void *)data {
