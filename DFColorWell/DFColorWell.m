@@ -186,9 +186,6 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     if (panel) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
         
-        panel.target = nil;
-        panel.action = NULL;
-        
         [panel close];
     }
 }
