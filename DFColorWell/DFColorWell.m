@@ -125,6 +125,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property NSBezierPath *controlOuterBorderPath;
 
+@property NSClickGestureRecognizer *clickRecognizer;
+
 // Popover and content view controller
 @property DFColorGridView *colorGridView;
 
@@ -529,6 +531,43 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 }
 
 
+#pragma mark - Gesture handling
+
+- (BOOL) useGestureRecognizer {
+    
+    return self.clickRecognizer != nil;
+}
+
+- (void) setUseGestureRecognizer:(BOOL)useGestureRecognizer {
+    
+    if (useGestureRecognizer == self.useGestureRecognizer) {
+        return;
+    }
+    
+    if (self.clickRecognizer) {
+        [self removeGestureRecognizer:self.clickRecognizer];
+        self.clickRecognizer = nil;
+    } else {
+        self.clickRecognizer = [[NSClickGestureRecognizer alloc] initWithTarget:self action:@selector(clickGestureHandler:)];
+        [self addGestureRecognizer:self.clickRecognizer];
+    }
+}
+
+- (void) clickGestureHandler:(NSGestureRecognizer *)recognizer {
+    
+    if (recognizer.state == NSGestureRecognizerStateRecognized) {
+        
+        NSPoint locationInView = [recognizer locationInView:self];
+        
+        if (NSPointInRect(locationInView, [self _controlColorSwatchFrame])) {
+            [self _handleMouseUpInColorRect];
+        } else if (NSPointInRect(locationInView, [self _controlButtonFrame])){
+            [self _handleMouseUpInButtonRect];
+        }
+    }
+}
+
+
 #pragma mark - Mouse tracking
 
 - (void) mouseEntered:(NSEvent *)theEvent {
@@ -607,7 +646,6 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     [self beginDraggingSessionWithItems:@[item] event:theEvent source:source];
     
 }
-
 
 #pragma mark - Mouse Clicking
 
