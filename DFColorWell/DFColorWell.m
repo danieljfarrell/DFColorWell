@@ -85,9 +85,9 @@
 
 #pragma mark - Control geometry 
 
-#define INTRINSIC_WIDTH 65.0
-#define INTRINSIC_HEIGHT 21.0
-#define BUTTON_SIDE_LENGTH 21.0
+#define INTRINSIC_WIDTH 66.0
+#define INTRINSIC_HEIGHT 22.0
+#define BUTTON_SIDE_LENGTH 22.0
 #define MOUSE_OVER_INDICATOR_SIDE_LENGTH 13.0
 #define MOUSE_OVER_INDICATOR_PADDING 4.0
 #define MOUSE_OVER_INDICATOR_TIC_UNIT_LENGTH 3.0
@@ -224,6 +224,32 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     }
 }
 
+/** Returns the stroke width to draw exactly one on-screen pixel.
+ 
+ This takes the screen's scale factor into account (retina vs. non-retina).
+ */
+- (CGFloat)_strokeWidth {
+    CGFloat scale = self.window.backingScaleFactor;
+    
+    if (scale == 0) {
+        // View is not yet attached to a window.
+        return 1;
+    } else {
+        return 1 / scale;
+    }
+}
+
+/** Insets the given rectangle for path calculations that take are suitable for stroking exactly
+ one pixel thick paths.
+ 
+ In Cocoa, stroking is done by drawing to both sides of an infinitely thin line. So to draw a line
+ that should be 1pt wide, the coordinates must be offset by 0.5pt.
+ */
+- (NSRect)_insetRectForStroking:(NSRect)rect {
+    CGFloat inset = [self _strokeWidth] / 2;
+    return NSInsetRect(rect, inset, inset);
+}
+
 #pragma mark Color swatch
 
 /* The basic frame of the control's color swatch.
@@ -231,12 +257,17 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
  This frame used to generate a path with rounded corners for the control.
  */
 - (NSRect) _controlColorSwatchFrame {
-    return NSMakeRect(0.25, 0.25, INTRINSIC_WIDTH  - BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
+    return NSMakeRect(0, 0, INTRINSIC_WIDTH  - BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
 }
 
 - (NSBezierPath*) _generateControlColorSwatchPath {
+
+    // Since we're stroking the outline later on we also have to inset the rectangle here to get
+    // a pixel-perfect shape without any artifacts that might peek out from below the stroked border.
+    NSRect rect = [self _insetRectForStroking:[self _controlColorSwatchFrame]];
+    // Don't inset on the right border.
+    rect.size.width += [self _strokeWidth];
     
-    NSRect rect = [self _controlColorSwatchFrame];
     CGFloat r = BUTTON_RADIUS;
     
     NSPoint pt1 = NSMakePoint(NSMinX(rect) + r, NSMaxY(rect));
@@ -306,7 +337,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 - (NSRect) _controlButtonFrame {
     NSRect colorRect = [self _controlColorSwatchFrame];
-    return NSMakeRect(NSMaxX(colorRect) + 0.25, 0.25, BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
+    return NSMakeRect(NSMaxX(colorRect), 0, BUTTON_SIDE_LENGTH, INTRINSIC_HEIGHT);
 }
 
 - (NSBezierPath*) _generatedButtonPath {
@@ -369,6 +400,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (NSBezierPath*) _generateControlOuterBorderPath {
     
     NSRect rect = NSUnionRect([self _controlColorSwatchFrame], [self _controlButtonFrame]);
+    rect = [self _insetRectForStroking:rect];
     
     CGFloat r = BUTTON_RADIUS;
     
@@ -413,19 +445,21 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     }
     
     /* Stroke the border */
-    [_controlOuterBorderPath setLineWidth:0.5];
+    [_controlOuterBorderPath setLineWidth:[self _strokeWidth]];
     [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
     [_controlOuterBorderPath stroke];
 }
 
 - (void) _drawSeparatorLine {
-    NSPoint startPoint = NSMakePoint(NSMaxX([self _controlColorSwatchFrame]), NSMaxY([self _controlColorSwatchFrame]));
-    NSPoint endPoint = NSMakePoint(NSMaxX([self _controlColorSwatchFrame]), NSMinY([self _controlColorSwatchFrame]));
+    // The x coordinate needs to offset by half the stroke width.
+    CGFloat x = NSMaxX([self _controlColorSwatchFrame]) + ([self _strokeWidth] / 2);
+    NSPoint startPoint = NSMakePoint(x, NSMaxY([self _controlColorSwatchFrame]));
+    NSPoint endPoint = NSMakePoint(x, NSMinY([self _controlColorSwatchFrame]));
     [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
     NSBezierPath *line = [NSBezierPath bezierPath];
     [line moveToPoint:startPoint];
     [line lineToPoint:endPoint];
-    [line setLineWidth:0.5];
+    [line setLineWidth:[self _strokeWidth]];
     [line stroke];
 }
 
@@ -448,7 +482,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     [gradientFill drawInBezierPath:outerPath angle:90.0];
 }
 
-#pragma Mouse over indicator
+#pragma mark Mouse over indicator
 
 - (NSRect) _mouseOverIndicatorFrame {
     
@@ -482,7 +516,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     [tickPath moveToPoint:firstPoint];
     [tickPath lineToPoint:secondPoint];
     [tickPath lineToPoint:thridPoint];
-    [tickPath setLineWidth:1.0];
+    [tickPath setLineWidth:[self _strokeWidth] * 2];
     [[NSColor whiteColor] setStroke];
     [tickPath stroke];
     
@@ -764,17 +798,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 #pragma mark - Autolayout
 
 - (NSSize) intrinsicContentSize {
-    
-    /* The views has a fixed size, but we need an extra pixel on all 
-     sizes so that that the border stroke remains fully within the view.
-     For this reason we check with NSScreen the smallest possible line 
-     width and add that amount to the defined intrinsic size. */
-    NSScreen *screen = [NSScreen mainScreen];
-    CGFloat buffer = 2.0;
-    if ([screen backingScaleFactor] == 2.0) {
-        buffer = 1.0;
-    }
-    return NSMakeSize(INTRINSIC_WIDTH + buffer, INTRINSIC_HEIGHT + buffer);
+    return NSMakeSize(INTRINSIC_WIDTH, INTRINSIC_HEIGHT);
 }
 
 #pragma mark - Dragging Source
