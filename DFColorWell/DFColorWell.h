@@ -91,6 +91,18 @@ IB_DESIGNABLE
  */
 @property(strong) NSColor *color;
 
+///---------------------------------
+/// @name Using a gesture recognizer
+///---------------------------------
+
+
+/** Whether to use a gesture recognizer instead of a mouse up handler.
+ 
+ The mouse event doesn't work inside a table view.  Not sure why, but using a gesture recognizer works around the issue.
+ */
+@property BOOL useGestureRecognizer;
+
+
 ///--------------------------------------------------
 /// @name Customising the colors shown in the popover
 ///--------------------------------------------------
