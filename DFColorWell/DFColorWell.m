@@ -130,6 +130,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property NSPopover *popover;
 
+@property DFColorGridViewDefaultDelegate *defaultDelegate;
+
 @end
 
 @implementation DFColorWell
@@ -175,8 +177,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     if (self.color == nil) {
         self.color = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
     }
-    
-    self.delegate = [[DFColorGridViewDefaultDelegate alloc] init];
+	
+    self.defaultDelegate = [[DFColorGridViewDefaultDelegate alloc] init];
+	self.delegate = self.defaultDelegate;
 }
 
 #pragma mark - Tooltips
@@ -305,6 +308,12 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         _controlColorSwatchPath = [self _generateControlColorSwatchPath];
     }
     
+    if (!self.enabled) {
+        [[NSColor controlColor] setFill];
+        [_controlColorSwatchPath fill];
+        return;
+    }
+    
     [[NSColor blackColor] setFill];
     [_controlColorSwatchPath fill];
     [[NSColor whiteColor] setFill];
@@ -366,20 +375,30 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         _controlButtonPath = [self _generatedButtonPath];
     }
     
-    [[NSColor controlColor] setFill];
-    if (_shouldDrawButtonRegionWithSelectedColor) {
-        [[NSColor alternateSelectedControlColor] setFill];
+    CGFloat imageAlpha = 1;
+    
+    if (self.enabled) {
+        [[NSColor controlColor] setFill];
+        if (_shouldDrawButtonRegionWithSelectedColor) {
+            [[NSColor alternateSelectedControlColor] setFill];
+            
+        } else if (_shouldDrawDarkerButtonRegion) {
+            [[NSColor colorWithCalibratedWhite:0.825 alpha:1.0] setFill];
+        }
         
-    } else if (_shouldDrawDarkerButtonRegion) {
-        [[NSColor colorWithCalibratedWhite:0.825 alpha:1.0] setFill];
+    } else {
+        [[NSColor controlColor] setFill];
+        imageAlpha = 0.6;
     }
     
     [_controlButtonPath fill];
     
     // Draw the image centre in this region
     NSImage *image = [NSImage imageNamed:@"DFColorWheel"];
-    [image drawInRect:NSInsetRect([self _controlButtonFrame], BUTTON_IMAGE_INSET, BUTTON_IMAGE_INSET)];
-    
+    [image drawInRect:NSInsetRect([self _controlButtonFrame], BUTTON_IMAGE_INSET, BUTTON_IMAGE_INSET)
+             fromRect:NSZeroRect
+            operation:NSCompositeSourceOver
+             fraction:imageAlpha];
 }
 
 #pragma mark Control border
@@ -433,7 +452,13 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     
     /* Stroke the border */
     [_controlOuterBorderPath setLineWidth:[self _strokeWidth]];
-    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
+    
+    if (self.enabled) {
+        [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
+    } else {
+        [[NSColor colorWithCalibratedWhite:0.725 alpha:1.0] setStroke];
+    }
+    
     [_controlOuterBorderPath stroke];
 }
 
@@ -442,7 +467,13 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     CGFloat x = NSMaxX([self _controlColorSwatchFrame]) + ([self _strokeWidth] / 2);
     NSPoint startPoint = NSMakePoint(x, NSMaxY([self _controlColorSwatchFrame]));
     NSPoint endPoint = NSMakePoint(x, NSMinY([self _controlColorSwatchFrame]));
-    [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
+    
+    if (self.enabled) {
+        [[NSColor colorWithCalibratedWhite:0.5 alpha:1.0] setStroke];
+    } else {
+        [[NSColor colorWithCalibratedWhite:0.725 alpha:1.0] setStroke];
+    }
+    
     NSBezierPath *line = [NSBezierPath bezierPath];
     [line moveToPoint:startPoint];
     [line lineToPoint:endPoint];
@@ -557,7 +588,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (void) mouseEntered:(NSEvent *)theEvent {
     
     NSTrackingArea *trackingArea = [theEvent trackingArea];
-    if (trackingArea == nil) {
+    if (trackingArea == nil || !self.enabled) {
         return;
     }
     
@@ -575,7 +606,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (void) mouseExited:(NSEvent *)theEvent {
     
     NSTrackingArea *trackingArea = [theEvent trackingArea];
-    if (trackingArea == nil) {
+    if (trackingArea == nil || !self.enabled) {
         return;
     }
     
@@ -593,6 +624,10 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 - (void) mouseUp:(NSEvent *)theEvent {
 
+    if (!self.enabled) {
+        return;
+    }
+    
     /* Mouse down either launches a popover or the color
      panel depending on the location in the view. */
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -604,6 +639,10 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 }
 
 - (void) mouseDragged:(NSEvent *)theEvent {
+    
+    if (!self.enabled) {
+        return;
+    }
     
     id propertyListRep = [self.color pasteboardPropertyListForType:NSPasteboardTypeColor];
     NSPasteboardItem *pbItem = [[NSPasteboardItem alloc] initWithPasteboardPropertyList:propertyListRep ofType:NSPasteboardTypeColor];
