@@ -132,6 +132,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property NSPopover *popover;
 
+@property BOOL isInterfaceBuilder;
+
 @end
 
 @implementation DFColorWell
@@ -181,14 +183,21 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     self.delegate = [[DFColorGridViewDefaultDelegate alloc] init];
 }
 
+- (void)prepareForInterfaceBuilder {
+    
+    self.isInterfaceBuilder = YES;
+}
+
 - (void)dealloc {
     
-    NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-    
-    if (panel) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
+    if (!self.isInterfaceBuilder) {
+        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
         
-        [panel close];
+        if (panel) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
+            
+            [panel close];
+        }
     }
 }
 
