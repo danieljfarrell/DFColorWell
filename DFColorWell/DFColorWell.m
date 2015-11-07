@@ -179,7 +179,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     }
 	
     self.defaultDelegate = [[DFColorGridViewDefaultDelegate alloc] init];
-	self.delegate = self.defaultDelegate;
+    if (self.delegate == nil) {
+        self.delegate = self.defaultDelegate;
+    }
 }
 
 #pragma mark - Tooltips
