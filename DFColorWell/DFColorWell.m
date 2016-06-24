@@ -216,11 +216,11 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     if (view == self) {
         
         if (data == kDFColorSwatchTooltipArea) {
-            return @"Click to choose a colour.";
+            return NSLocalizedStringWithDefaultValue( @"DFCOLORWELL_SHOW_COLOR_PANEL", nil, [NSBundle mainBundle], @"Click to choose a color", @"Tool tip to select a color" );
         }
         
         if (data == kDFButtonTooltipArea) {
-            return @"Click to show more colours or show your own.";
+            return NSLocalizedStringWithDefaultValue( @"DFCOLORWELL_SHOW_COLOR_POPOVER", nil, [NSBundle mainBundle], @"Click to show more colors or show your own", @"Tool tip to select a color or show popover" );
         }
     }
     return nil;
