@@ -151,6 +151,9 @@
 
 - (void) mouseDown:(NSEvent *)theEvent {
     
+    _mouseDownInColumnIndex = NSNotFound;
+    _mouseDownInRowIndex = NSNotFound;
+    
     NSUInteger columns = [_colorWell.delegate numberOfColumnsInColorWell:_colorWell];
     NSUInteger rows = [_colorWell.delegate numberOfRowsInColorWell:_colorWell];
     NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -172,6 +175,10 @@
 
 
 - (void) mouseUp:(NSEvent *)theEvent {
+    
+    if (_mouseDownInRowIndex == NSNotFound || _mouseDownInColumnIndex == NSNotFound) {
+        return;
+    }
     
     _mouseIsDown = NO;
     //NSLog(@"%s", __PRETTY_FUNCTION__);
@@ -198,7 +205,6 @@
             }
         }
     }
-    
     
     if ((_mouseDownInColumnIndex == mouseUpInColumnIndex) && (_mouseDownInRowIndex == mouseUpInRowIndex)) {
         selectedColor = [_colorWell.delegate colorWell:_colorWell colorAtColumn:_mouseDownInColumnIndex row:_mouseDownInRowIndex];
