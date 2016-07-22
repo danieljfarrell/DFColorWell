@@ -726,7 +726,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     contentViewController.view = _colorGridView;
     [_popover setContentViewController:contentViewController];
     [_popover setAnimates:NO];
-    [_popover setBehavior:NSPopoverBehaviorSemitransient];
+    [_popover setBehavior:NSPopoverBehaviorTransient];
     [_popover showRelativeToRect:[self _controlColorSwatchFrame] ofView:self preferredEdge:NSMinYEdge];
 }
 
