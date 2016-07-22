@@ -157,6 +157,10 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @implementation DFColorWell
 
++ (BOOL) automaticallyNotifiesObserversOfColor {
+    return NO;
+}
+
 - (void) awakeFromNib {
     
     // Layout
