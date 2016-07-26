@@ -9,6 +9,25 @@
 #import "DFColorWell.h"
 #import "DFColorGridView.h"
 
+@interface DFColorWell ()
+
+- (void) handlePrivateColorWellDeactivate;
+
+@end
+
+@interface DFPrivateColorWell : NSColorWell
+@property (weak) DFColorWell *colorWell;
+@end
+
+@implementation DFPrivateColorWell
+
+- (void)deactivate {
+    [_colorWell handlePrivateColorWellDeactivate];
+    [super deactivate];
+}
+
+@end
+
 #pragma mark - Build-in color well delegate
 
 @interface DFColorGridViewDefaultDelegate : NSObject <DFColorWellDelegate>
@@ -132,34 +151,14 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property DFColorGridViewDefaultDelegate *defaultDelegate;
 
+@property DFPrivateColorWell *privateColorWell;
+
 @end
 
 @implementation DFColorWell
 
-- (void)dealloc {
-	
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
-	if ([NSColorPanel sharedColorPanelExists]) {
-		NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-		BOOL needToModifyTarget = NO;
-		
-		@try {
-			// The NSColorPanel only has a setter for the target but no getter. But it has a private
-			// variable named "_target" which we can query using KVC (this is App Store safe). If
-			// Apple ever decides to remove the variable, the `valueForKey:` will throw an exception
-			// so we need to be prepared for that.
-			id target = [panel valueForKey:@"target"];
-			needToModifyTarget = target == self;
-		}
-		@catch (NSException *exception) {
-		}
-		
-		if (needToModifyTarget) {
-			panel.target = nil;
-			panel.action = NULL;
-		}
-	}
++ (BOOL) automaticallyNotifiesObserversOfColor {
+    return NO;
 }
 
 - (void) awakeFromNib {
@@ -216,11 +215,11 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     if (view == self) {
         
         if (data == kDFColorSwatchTooltipArea) {
-            return @"Click to choose a colour.";
+            return NSLocalizedStringWithDefaultValue( @"DFCOLORWELL_SHOW_COLOR_POPOVER", nil, [NSBundle mainBundle], @"Click to choose a color", @"Tool tip to select a color" );
         }
         
         if (data == kDFButtonTooltipArea) {
-            return @"Click to show more colours or show your own.";
+            return NSLocalizedStringWithDefaultValue( @"DFCOLORWELL_SHOW_COLOR_PANEL", nil, [NSBundle mainBundle], @"Click to show all colors", @"Tool tip to show the color panel" );
         }
     }
     return nil;
@@ -578,6 +577,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     
     // Fill with black, this will end up looking like the upper triangle.
     NSBezierPath *path = [NSBezierPath bezierPathWithRect:frame];
+    path.lineWidth = 0.5;
     [[NSColor blackColor] setFill];
     [path fill];
     
@@ -719,6 +719,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
     // The color grid view knows it own size, set this here
     _popover = [[NSPopover alloc] init];
+    _popover.delegate = self;
     [_popover setContentSize:[_colorGridView intrinsicContentSize]];
     
     // Set up popover and show
@@ -726,53 +727,54 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     contentViewController.view = _colorGridView;
     [_popover setContentViewController:contentViewController];
     [_popover setAnimates:NO];
-    [_popover setBehavior:NSPopoverBehaviorSemitransient];
+    [_popover setBehavior:NSPopoverBehaviorTransient];
     [_popover showRelativeToRect:[self _controlColorSwatchFrame] ofView:self preferredEdge:NSMinYEdge];
 }
 
 - (void) _handleMouseUpInButtonRect {
-    
-    if (_shouldDrawButtonRegionWithSelectedColor == YES) {
-        
-        _shouldDrawButtonRegionWithSelectedColor = NO;
-        _shouldDrawDarkerButtonRegion = YES;
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-        [panel close];
-        
-        
+    if (_privateColorWell) {
+        [_privateColorWell deactivate];
     } else {
-        
         _shouldDrawDarkerButtonRegion = NO;
         _shouldDrawButtonRegionWithSelectedColor = YES;
         [self setNeedsDisplay:YES];
         
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-        panel.showsAlpha = YES;
-        panel.target = self;
-        panel.action = @selector(handleColorPanelColorSelectionAction:);
-        panel.color = self.color;
-        [panel orderFront:nil];
+        if (_popover) {
+            _popover.delegate = nil;
+            [self reportDidChooseColor];
+        }
         
-        /* Capture the close of the color panel. */
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
-        
+        _privateColorWell = [[DFPrivateColorWell alloc] initWithFrame:NSZeroRect];
+        [self addSubview:_privateColorWell];
+        _privateColorWell.hidden = YES;
+        _privateColorWell.color = self.color;
+        _privateColorWell.target = self;
+        _privateColorWell.action = @selector(takeColorFrom:);
+        _privateColorWell.colorWell = self;
+        [_privateColorWell activate:YES];
+        [self reportWillChooseColor];
     }
+}
 
+#pragma mark - Popover delegate
+
+- (void) popoverWillShow:(NSNotification *)notification {
+    [self reportWillChooseColor];
+}
+
+- (void) popoverDidClose:(NSNotification *)notification {
+    [self reportDidChooseColor];
 }
 
 #pragma mark - Dealing with the NSColorPanel
 
-- (void) handleWindowWillCloseNotification:(NSNotification*)notification {
-    
-    /* Remove the color panel notification */
-    NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
-    
-    /* Reset all the color panel values */
-    panel.target = nil;
-    panel.action = NULL;
+- (void) handlePrivateColorWellDeactivate {
+    [_privateColorWell removeFromSuperview];
+    _privateColorWell = nil;
+
     _shouldDrawButtonRegionWithSelectedColor = NO;
     [self setNeedsDisplay:YES];
+    [self reportDidChooseColor];
 }
 
 - (void) handleColorPanelColorSelectionAction:(id)sender {
@@ -810,6 +812,22 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 - (NSColor*) color {
     return _color;
+}
+
+- (void) takeColorFrom:(id)sender {
+    self.color = [sender color];
+}
+
+- (void) reportWillChooseColor {
+    if ([_delegate respondsToSelector:@selector(colorWellWillChooseColor:)]) {
+        [_delegate colorWellWillChooseColor:self];
+    }
+}
+
+- (void) reportDidChooseColor {
+    if ([_delegate respondsToSelector:@selector(colorWellDidChooseColor:)]) {
+        [_delegate colorWellDidChooseColor:self];
+    }
 }
 
 #pragma mark - Autolayout

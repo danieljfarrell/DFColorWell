@@ -51,6 +51,11 @@
  */
 - (NSColor*) colorWell:(DFColorWell*)colorWell colorAtColumn:(NSUInteger)column row:(NSUInteger)row;
 
+@optional
+
+- (void) colorWellWillChooseColor:(DFColorWell*)colorWell;
+- (void) colorWellDidChooseColor:(DFColorWell*)colorWell;
+
 @end
 
 /**
@@ -73,7 +78,7 @@
  @warning `DFColorWell` is not a drop in replacement for a `NSColorWell` because it does not attempt to implement the same interface.
  */
 IB_DESIGNABLE
-@interface DFColorWell : NSControl <NSDraggingSource, NSDraggingDestination>
+@interface DFColorWell : NSControl <NSDraggingSource, NSDraggingDestination, NSPopoverDelegate>
 
 
 ///-------------------------
