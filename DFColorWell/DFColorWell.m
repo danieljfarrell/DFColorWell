@@ -577,6 +577,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     
     // Fill with black, this will end up looking like the upper triangle.
     NSBezierPath *path = [NSBezierPath bezierPathWithRect:frame];
+    path.lineWidth = 0.5;
     [[NSColor blackColor] setFill];
     [path fill];
     
