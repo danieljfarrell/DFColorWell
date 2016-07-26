@@ -34,8 +34,8 @@
         _borderPadding = 6.0;
         _cellBorderLinewidth = 0.5;
         _intercellSpacing = 2.0;
-        _cellWidth = 44.0;
-        _cellHeight = 23.0;
+        _cellWidth = 37.0;
+        _cellHeight = 20.0;
         _cellBorderColor = [[NSColor darkGrayColor] colorWithAlphaComponent:0.5];
         
     }
