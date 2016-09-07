@@ -132,6 +132,10 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property DFColorGridViewDefaultDelegate *defaultDelegate;
 
+/// Whether we are currently updating the color panel's color and thus should ignore actions sent
+/// from the color panel.
+@property BOOL isUpdatingColorPanel;
+
 @end
 
 @implementation DFColorWell
@@ -139,27 +143,13 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (void)dealloc {
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
-	if ([NSColorPanel sharedColorPanelExists]) {
-		NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-		BOOL needToModifyTarget = NO;
-		
-		@try {
-			// The NSColorPanel only has a setter for the target but no getter. But it has a private
-			// variable named "_target" which we can query using KVC (this is App Store safe). If
-			// Apple ever decides to remove the variable, the `valueForKey:` will throw an exception
-			// so we need to be prepared for that.
-			id target = [panel valueForKey:@"target"];
-			needToModifyTarget = target == self;
-		}
-		@catch (NSException *exception) {
-		}
-		
-		if (needToModifyTarget) {
-			panel.target = nil;
-			panel.action = NULL;
-		}
-	}
+
+    if ([self isColorPanelTarget]) {
+        // Clear the color panel's reference to us to avoid a crash.
+        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+        panel.target = nil;
+        panel.action = NULL;
+    }
 }
 
 - (void) awakeFromNib {
@@ -776,7 +766,41 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 }
 
 - (void) handleColorPanelColorSelectionAction:(id)sender {
+    
+    if (self.isUpdatingColorPanel) {
+        // This action is a side-effect of us synchronizing the color panel's color. Ignore it.
+        return;
+    }
+    
     self.color = [sender color];
+}
+
+/** Returns whether the receiver is the current color panel target.
+ 
+ We can consider to be the "owner" of the color panel if this method returns YES.
+ */
+- (BOOL) isColorPanelTarget {
+    
+    if (![NSColorPanel sharedColorPanelExists]) {
+        return NO;
+    }
+    
+    BOOL delegateIsSelf;
+    
+    @try {
+        // The NSColorPanel only has a setter for the target but no getter. But it has a private
+        // variable named "_target" which we can query using KVC (this is App Store safe). If
+        // Apple ever decides to remove the variable, the `valueForKey:` will throw an exception
+        // so we need to be prepared for that.
+        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+        id target = [panel valueForKey:@"target"];
+        delegateIsSelf = (target == self);
+    }
+    @catch (NSException *exception) {
+        delegateIsSelf = NO;
+    }
+    
+    return delegateIsSelf;
 }
 
 #pragma mark - Setting the color
@@ -794,6 +818,15 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     _color = color;
     [self setNeedsDisplay:YES];
     [self didChangeValueForKey:@"color"];
+    
+    if ([self isColorPanelTarget]) {
+        // Update the panel as well so the control and panel are in sync. We need to ignore actions
+        // from the panel during that time.
+        self.isUpdatingColorPanel = YES;
+        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+        panel.color = color;
+        self.isUpdatingColorPanel = NO;
+    }
     
     // Set the control's target/action
     if ([self.target respondsToSelector:self.action]) {
