@@ -132,6 +132,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property DFColorGridViewDefaultDelegate *defaultDelegate;
 
+/// Whether we have registered as color panel observer.
+@property BOOL registeredAsObserver;
+
 @end
 
 @implementation DFColorWell
@@ -160,6 +163,12 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 			panel.action = NULL;
 		}
 	}
+    
+    // In case we're still registered as observer, unregister.
+    if (self.registeredAsObserver) {
+        [[NSColorPanel sharedColorPanel] removeObserver:self forKeyPath:@"target" context:nil];
+        self.registeredAsObserver = NO;
+    }
 }
 
 - (void) awakeFromNib {
@@ -751,13 +760,35 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         panel.target = self;
         panel.action = @selector(handleColorPanelColorSelectionAction:);
         panel.color = self.color;
-        [panel orderFront:nil];
-        
+		[panel orderFront:nil];
+		
+		// Try to observe the "target". If it changes, we're not the owner any more. Since it's not
+		// officially observable, we need to catch any exceptions.
+		@try {
+			[panel addObserver:self forKeyPath:@"target" options:NSKeyValueObservingOptionNew context:nil];
+			self.registeredAsObserver = YES;
+		} @catch (NSException *exception) {
+		}
+		
         /* Capture the close of the color panel. */
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
         
     }
+}
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"target"]) {
+		// The "owner" did change. Stop observing the panel.
+		@try {
+			[object removeObserver:self forKeyPath:@"target" context:nil];
+			self.registeredAsObserver = NO;
+		} @catch (NSException *exception) {
+		}
+		
+		_shouldDrawButtonRegionWithSelectedColor = NO;
+		[self setNeedsDisplay:YES];
+	}
 }
 
 #pragma mark - Dealing with the NSColorPanel
