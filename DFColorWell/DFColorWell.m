@@ -740,7 +740,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         panel.showsAlpha = YES;
         panel.target = self;
         panel.action = @selector(handleColorPanelColorSelectionAction:);
+        self.isUpdatingColorPanel = YES;
         panel.color = self.color;
+        self.isUpdatingColorPanel = NO;
         [panel orderFront:nil];
         
         /* Capture the close of the color panel. */
@@ -811,6 +813,11 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     
     
     if (color == nil) {
+        return;
+    }
+    
+    if ([_color isEqual:color]) {
+        // Don't re-apply the same color to prevent event loops.
         return;
     }
     
