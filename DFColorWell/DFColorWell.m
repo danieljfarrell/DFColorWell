@@ -26,6 +26,31 @@
     return self;
 }
 
+- (void) dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
+	if ([NSColorPanel sharedColorPanelExists]) {
+		NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+		BOOL needToModifyTarget = NO;
+		
+		@try {
+			// The NSColorPanel only has a setter for the target but no getter. But it has a private
+			// variable named "_target" which we can query using KVC (this is App Store safe). If
+			// Apple ever decides to remove the variable, the `valueForKey:` will throw an exception
+			// so we need to be prepared for that.
+			id target = [panel valueForKey:@"target"];
+			needToModifyTarget = target == self;
+		}
+		@catch (NSException *exception) {
+		}
+		
+		if (needToModifyTarget) {
+			panel.target = nil;
+			panel.action = NULL;
+		}
+	}
+}
+
 - (void) _generateColors {
     
     _colorMatrix = [NSMutableDictionary new];
