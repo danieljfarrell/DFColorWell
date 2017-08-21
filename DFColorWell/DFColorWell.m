@@ -213,7 +213,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
             return @"Click to show more colours or show your own.";
         }
     }
-    return nil;
+    return @"";
 }
 
 #pragma mark - Control private drawing methods
