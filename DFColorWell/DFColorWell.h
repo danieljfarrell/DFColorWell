@@ -89,7 +89,7 @@ IB_DESIGNABLE
  
  This property is KVO observable.
  */
-@property NSColor *color;
+@property(strong) NSColor *color;
 
 ///---------------------------------
 /// @name Using a gesture recognizer
@@ -113,7 +113,7 @@ IB_DESIGNABLE
  During initialisation this property is set to an internal delegate which provide default colour matrix view for the popover.
  
  */
-@property IBOutlet id <DFColorWellDelegate> delegate;
+@property(weak) IBOutlet id <DFColorWellDelegate> delegate;
 
 #pragma mark - Drawing convenience methods
 

@@ -12,8 +12,6 @@ Any improvements welcomed.
 Things that need adding & improvements
 --------------------------------------
 
-* I wrote this on rMBP running OSX 10.10 so there may be some retina specific code which does not look good on other screens.
-
 * Want to add the ability to display custom views in the popover (from a user specified content view controller), this will enable users to design their own layout of colour cells etc.
 
 Usage
@@ -30,7 +28,7 @@ Usage
 
    ![Setting the placeholder intrinsic content size](http://i.imgur.com/5X0KuA5.png)
 
-4. Implement all the **required** delegate methods which fills the pop over with different colours:
+4. **Optionally** Implement the delegate methods which fills the pop over with different colours. If you do not implement these delegate methods an internal delegate object will be created which provide the default colours shown above in the main screenshot.
 
 ```
     - (NSUInteger) numberOfRowsInColorWell:(DFColorWell*)colorWell;
