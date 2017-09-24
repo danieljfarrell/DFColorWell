@@ -154,6 +154,16 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         panel.target = nil;
         panel.action = NULL;
     }
+    
+    if (!self.isInterfaceBuilder) {
+        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+        
+        if (panel) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
+            
+            [panel close];
+        }
+    }
 }
 
 - (void) awakeFromNib {
@@ -206,19 +216,6 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (void)prepareForInterfaceBuilder {
     
     self.isInterfaceBuilder = YES;
-}
-
-- (void)dealloc {
-    
-    if (!self.isInterfaceBuilder) {
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-        
-        if (panel) {
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
-            
-            [panel close];
-        }
-    }
 }
 
 #pragma mark - Tooltips
@@ -879,6 +876,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         return;
     }
     
+    BOOL settingDefault = !_color;
+    
     [self willChangeValueForKey:@"color"];
     _color = color;
     [self setNeedsDisplay:YES];
@@ -894,7 +893,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     }
     
     // Set the control's target/action
-    if ([self.target respondsToSelector:self.action]) {
+    if (!settingDefault && [self.target respondsToSelector:self.action]) {
         [NSApp sendAction:self.action to:self.target from:self];
     }
     
