@@ -197,6 +197,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     if (self.delegate == nil) {
         self.delegate = self.defaultDelegate;
     }
+    
+    self.enabled = true;
 }
 
 #pragma mark - Tooltips
