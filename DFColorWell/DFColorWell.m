@@ -731,42 +731,49 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 }
 
 - (void) _handleMouseUpInButtonRect {
-    
+	
+	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+	
     if (_shouldDrawButtonRegionWithSelectedColor == YES) {
         
         _shouldDrawButtonRegionWithSelectedColor = NO;
         _shouldDrawDarkerButtonRegion = YES;
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
         [panel close];
-        
-        
-    } else {
-        
-        _shouldDrawDarkerButtonRegion = NO;
-        _shouldDrawButtonRegionWithSelectedColor = YES;
-        [self setNeedsDisplay:YES];
-        
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-        panel.showsAlpha = YES;
-        panel.target = self;
-        panel.action = @selector(handleColorPanelColorSelectionAction:);
-		self.isUpdatingColorPanel = YES;
-        panel.color = self.color;
-		self.isUpdatingColorPanel = NO;
-		[panel orderFront:nil];
 		
-		/* Try to observe the "target". If it changes, we're not the owner any more. Since it's not
-		 officially observable, we need to catch any exceptions. */
+    } else {
+		[panel orderFront:self];
+		[self _takeColorPanelOwnership];
+    }
+}
+
+- (void) _takeColorPanelOwnership {
+
+	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+	panel.showsAlpha = YES;
+	panel.target = self;
+	panel.action = @selector(handleColorPanelColorSelectionAction:);
+	self.isUpdatingColorPanel = YES;
+	panel.color = self.color;
+	self.isUpdatingColorPanel = NO;
+
+	if ([panel isVisible]) {
+		_shouldDrawDarkerButtonRegion = NO;
+		_shouldDrawButtonRegionWithSelectedColor = YES;
+		[self setNeedsDisplay:YES];
+	}
+	
+	/* Try to observe the "target". If it changes, we're not the owner any more. Since it's not
+	 officially observable, we need to catch any exceptions. */
+	if (!self.registeredAsObserver) {
 		@try {
 			[panel addObserver:self forKeyPath:@"target" options:NSKeyValueObservingOptionNew context:nil];
 			self.registeredAsObserver = YES;
 		} @catch (NSException *exception) {
 		}
-		
-        /* Capture the close of the color panel. */
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
-        
-    }
+	}
+
+	/* Capture the close of the color panel. */
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
@@ -843,7 +850,6 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 - (void) setColor:(NSColor *)color {
     
-    
     if (color == nil) {
         return;
     }
@@ -883,6 +889,28 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (NSColor*) color {
     return _color;
 }
+
+#pragma mark - Public methods
+
+- (void) openColorPanel {
+	
+	if ([self isColorPanelTarget]) {
+		[[NSColorPanel sharedColorPanel] orderFront:self];
+		return;
+	}
+	
+	[self _handleMouseUpInButtonRect];
+}
+
+- (void) takeColorPanelOwnership {
+	
+	if ([self isColorPanelTarget]) {
+		return;
+	}
+	
+	[self _takeColorPanelOwnership];
+}
+
 
 #pragma mark - Autolayout
 
