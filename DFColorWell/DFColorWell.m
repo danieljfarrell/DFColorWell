@@ -823,10 +823,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         return;
     }
     
-    [self willChangeValueForKey:@"color"];
     _color = color;
     [self setNeedsDisplay:YES];
-    [self didChangeValueForKey:@"color"];
     
     if ([self isColorPanelTarget]) {
         // Update the panel as well so the control and panel are in sync. We need to ignore actions
