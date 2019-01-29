@@ -811,6 +811,13 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @synthesize color = _color;
 
++ (BOOL)automaticallyNotifiesObserversOfColor
+{
+	// We're calling `willChangeValueForKey:` and `didChangeValueForKey:` manually, don't let
+	// Cocoa generate these for us.
+	return NO;
+}
+
 - (void) setColor:(NSColor *)color {
     
     
@@ -823,7 +830,10 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         return;
     }
     
+	[self willChangeValueForKey:NSStringFromSelector(@selector(color))];
     _color = color;
+	[self didChangeValueForKey:NSStringFromSelector(@selector(color))];
+
     [self setNeedsDisplay:YES];
     
     if ([self isColorPanelTarget]) {
