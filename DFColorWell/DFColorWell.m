@@ -132,6 +132,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property DFColorGridViewDefaultDelegate *defaultDelegate;
 
+@property BOOL registeredAsObserver;
+
 /// Whether we are currently updating the color panel's color and thus should ignore actions sent
 /// from the color panel.
 @property BOOL isUpdatingColorPanel;
@@ -150,6 +152,12 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         panel.target = nil;
         panel.action = NULL;
     }
+	
+	// In case we're still registered as observer, unregister.
+	if (self.registeredAsObserver) {
+		[[NSColorPanel sharedColorPanel] removeObserver:self forKeyPath:@"target" context:nil];
+		self.registeredAsObserver = NO;
+	}
 }
 
 - (void) awakeFromNib {
@@ -742,16 +750,38 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         panel.showsAlpha = YES;
         panel.target = self;
         panel.action = @selector(handleColorPanelColorSelectionAction:);
-        self.isUpdatingColorPanel = YES;
+		self.isUpdatingColorPanel = YES;
         panel.color = self.color;
-        self.isUpdatingColorPanel = NO;
-        [panel orderFront:nil];
-        
+		self.isUpdatingColorPanel = NO;
+		[panel orderFront:nil];
+		
+		/* Try to observe the "target". If it changes, we're not the owner any more. Since it's not
+		 officially observable, we need to catch any exceptions. */
+		@try {
+			[panel addObserver:self forKeyPath:@"target" options:NSKeyValueObservingOptionNew context:nil];
+			self.registeredAsObserver = YES;
+		} @catch (NSException *exception) {
+		}
+		
         /* Capture the close of the color panel. */
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
         
     }
+}
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"target"]) {
+		/* The "owner" did change. Stop observing the panel. */
+		@try {
+			[object removeObserver:self forKeyPath:@"target" context:nil];
+			self.registeredAsObserver = NO;
+		} @catch (NSException *exception) {
+		}
+		
+		_shouldDrawButtonRegionWithSelectedColor = NO;
+		[self setNeedsDisplay:YES];
+	}
 }
 
 #pragma mark - Dealing with the NSColorPanel
