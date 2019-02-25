@@ -132,6 +132,8 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property DFColorGridViewDefaultDelegate *defaultDelegate;
 
+@property BOOL registeredAsObserver;
+
 /// Whether we are currently updating the color panel's color and thus should ignore actions sent
 /// from the color panel.
 @property BOOL isUpdatingColorPanel;
@@ -142,14 +144,7 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 - (void)dealloc {
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    if ([self isColorPanelTarget]) {
-        // Clear the color panel's reference to us to avoid a crash.
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-        panel.target = nil;
-        panel.action = NULL;
-    }
+	[self _giveUpColorPanelOwnership];
 }
 
 - (void) awakeFromNib {
@@ -723,50 +718,95 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 }
 
 - (void) _handleMouseUpInButtonRect {
-    
+	
+	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+	
     if (_shouldDrawButtonRegionWithSelectedColor == YES) {
         
         _shouldDrawButtonRegionWithSelectedColor = NO;
         _shouldDrawDarkerButtonRegion = YES;
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
         [panel close];
-        
-        
+		
     } else {
-        
-        _shouldDrawDarkerButtonRegion = NO;
-        _shouldDrawButtonRegionWithSelectedColor = YES;
-        [self setNeedsDisplay:YES];
-        
-        NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-        panel.showsAlpha = YES;
-        panel.target = self;
-        panel.action = @selector(handleColorPanelColorSelectionAction:);
-        self.isUpdatingColorPanel = YES;
-        panel.color = self.color;
-        self.isUpdatingColorPanel = NO;
-        [panel orderFront:nil];
-        
-        /* Capture the close of the color panel. */
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
-        
+		[panel orderFront:self];
+		[self _takeColorPanelOwnership];
     }
+}
 
+- (void) _takeColorPanelOwnership {
+
+	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+	panel.showsAlpha = YES;
+	panel.target = self;
+	panel.action = @selector(handleColorPanelColorSelectionAction:);
+	self.isUpdatingColorPanel = YES;
+	panel.color = self.color;
+	self.isUpdatingColorPanel = NO;
+
+	if ([panel isVisible]) {
+		_shouldDrawDarkerButtonRegion = NO;
+		_shouldDrawButtonRegionWithSelectedColor = YES;
+		[self setNeedsDisplay:YES];
+	}
+	
+	/* Try to observe the "target". If it changes, we're not the owner any more. Since it's not
+	 officially observable, we need to catch any exceptions. */
+	if (!self.registeredAsObserver) {
+		@try {
+			[panel addObserver:self forKeyPath:@"target" options:NSKeyValueObservingOptionNew context:nil];
+			self.registeredAsObserver = YES;
+		} @catch (NSException *exception) {
+		}
+	}
+
+	/* Capture the close of the color panel. */
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleWindowWillCloseNotification:) name:NSWindowWillCloseNotification object:panel];
+}
+
+- (void) _giveUpColorPanelOwnership {
+	
+	/* Remove the color panel notification */
+	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
+	
+	if ([self isColorPanelTarget]) {
+		/* Reset all the color panel values */
+		panel.target = nil;
+		panel.action = NULL;
+		_shouldDrawButtonRegionWithSelectedColor = NO;
+		[self setNeedsDisplay:YES];
+	}
+	
+	/* Unobserve the "target". Since it's not officially observable, we need to catch any exceptions. */
+	if (self.registeredAsObserver) {
+		@try {
+			[panel removeObserver:self forKeyPath:@"target" context:nil];
+		} @catch (NSException *exception) {
+		}
+		self.registeredAsObserver = NO;
+	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"target"]) {
+		/* The "owner" did change. Stop observing the panel. */
+		@try {
+			[object removeObserver:self forKeyPath:@"target" context:nil];
+			self.registeredAsObserver = NO;
+		} @catch (NSException *exception) {
+		}
+		
+		_shouldDrawButtonRegionWithSelectedColor = NO;
+		[self setNeedsDisplay:YES];
+	}
 }
 
 #pragma mark - Dealing with the NSColorPanel
 
 - (void) handleWindowWillCloseNotification:(NSNotification*)notification {
-    
-    /* Remove the color panel notification */
-    NSColorPanel *panel = [NSColorPanel sharedColorPanel];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:panel];
-    
-    /* Reset all the color panel values */
-    panel.target = nil;
-    panel.action = NULL;
-    _shouldDrawButtonRegionWithSelectedColor = NO;
-    [self setNeedsDisplay:YES];
+	
+	[self _giveUpColorPanelOwnership];
 }
 
 - (void) handleColorPanelColorSelectionAction:(id)sender {
@@ -813,7 +853,6 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 - (void) setColor:(NSColor *)color {
     
-    
     if (color == nil) {
         return;
     }
@@ -853,6 +892,33 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (NSColor*) color {
     return _color;
 }
+
+#pragma mark - Public methods
+
+- (void) openColorPanel {
+	
+	if ([self isColorPanelTarget]) {
+		[[NSColorPanel sharedColorPanel] orderFront:self];
+		return;
+	}
+	
+	[self _handleMouseUpInButtonRect];
+}
+
+- (void) takeColorPanelOwnership {
+	
+	if ([self isColorPanelTarget]) {
+		return;
+	}
+	
+	[self _takeColorPanelOwnership];
+}
+
+- (void) giveUpColorPanelOwnership {
+	
+	[self _giveUpColorPanelOwnership];
+}
+
 
 #pragma mark - Autolayout
 

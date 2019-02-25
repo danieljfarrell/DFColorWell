@@ -103,6 +103,18 @@ IB_DESIGNABLE
  */
 @property(weak) IBOutlet id <DFColorWellDelegate> delegate;
 
+/** Shows the color panel, taking ownership of it.
+ */
+- (void) openColorPanel;
+
+/** Take ownership of the color panel, but doesn't open it if it's not visible.
+ */
+- (void) takeColorPanelOwnership;
+
+/** Give up ownership of the color panel if the color well is currently the color panel "owner".
+ */
+- (void) giveUpColorPanelOwnership;
+
 #pragma mark - Drawing convenience methods
 
 ///----------------------------
