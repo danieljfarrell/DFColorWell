@@ -111,6 +111,10 @@ IB_DESIGNABLE
  */
 - (void) takeColorPanelOwnership;
 
+/** Give up ownership of the color panel if the color well is currently the color panel "owner".
+ */
+- (void) giveUpColorPanelOwnership;
+
 #pragma mark - Drawing convenience methods
 
 ///----------------------------
