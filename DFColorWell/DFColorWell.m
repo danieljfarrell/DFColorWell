@@ -132,6 +132,9 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @property DFColorGridViewDefaultDelegate *defaultDelegate;
 
+/// Point at which the mouse button was pressed.
+@property NSPoint mouseDownLocation;
+
 @property BOOL registeredAsObserver;
 
 /// Whether we are currently updating the color panel's color and thus should ignore actions sent
@@ -636,6 +639,14 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
     }
 }
 
+- (void) mouseDown:(NSEvent *)theEvent {
+    if (!self.enabled) {
+        return;
+    }
+    
+    self.mouseDownLocation = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+}
+
 - (void) mouseUp:(NSEvent *)theEvent {
 
     if (!self.enabled) {
@@ -655,6 +666,19 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 - (void) mouseDragged:(NSEvent *)theEvent {
     
     if (!self.enabled) {
+        return;
+    }
+    
+    // Check whether the mouse have moved a minimum distance. If the user clicks and slightly moves
+    // the mouse while the button is still down we don't want to start a drag as the to user it would
+    // look like "the click didn't work".
+    static const NSPoint minimumDelta = { .x = 2, .y = 2 };
+    NSPoint locationInView = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    CGFloat deltaX = fabs(locationInView.x - self.mouseDownLocation.x);
+    CGFloat deltaY = fabs(locationInView.y - self.mouseDownLocation.y);
+    
+    if (deltaX < minimumDelta.x && deltaY < minimumDelta.y) {
+        // Mouse hasn't moved far enough, don't start a drag yet.
         return;
     }
     
