@@ -851,6 +851,13 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
 
 @synthesize color = _color;
 
++ (BOOL)automaticallyNotifiesObserversOfColor
+{
+	// We're calling `willChangeValueForKey:` and `didChangeValueForKey:` manually, don't let
+	// Cocoa generate these for us.
+	return NO;
+}
+
 - (void) setColor:(NSColor *)color {
     
     if (color == nil) {
@@ -862,10 +869,11 @@ static void * kDFButtonTooltipArea = &kDFButtonTooltipArea;
         return;
     }
     
-    [self willChangeValueForKey:@"color"];
+	[self willChangeValueForKey:NSStringFromSelector(@selector(color))];
     _color = color;
+	[self didChangeValueForKey:NSStringFromSelector(@selector(color))];
+
     [self setNeedsDisplay:YES];
-    [self didChangeValueForKey:@"color"];
     
     if ([self isColorPanelTarget]) {
         // Update the panel as well so the control and panel are in sync. We need to ignore actions
